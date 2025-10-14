@@ -8,8 +8,9 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     poprawna: 'zi',
     alternatywa: 'ź',
     pelne: 'ziemniak',
-    komentarz: 'W wyrazie "ziemniak" słyszymy "ź", ale piszemy "zi" przed samogłoską.',
-    ilustracja: { typ: 'emoji', symbol: '🥔', opis: 'Ziemniak' }
+    komentarz:
+      'W wyrazie "ziemniak" słyszymy "ź", ale piszemy "zi" przed samogłoską.',
+    ilustracja: { typ: 'emoji', symbol: '🥔', opis: 'Ziemniak' },
   },
   {
     id: 'zi-ziarno',
@@ -19,7 +20,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ź',
     pelne: 'ziarno',
     komentarz: '"zi" pojawia się przed samogłoską "a".',
-    ilustracja: { typ: 'emoji', symbol: '🌾', opis: 'Kłosy zboża' }
+    ilustracja: { typ: 'emoji', symbol: '🌾', opis: 'Kłosy zboża' },
   },
   {
     id: 'zi-zima',
@@ -29,7 +30,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ź',
     pelne: 'zima',
     komentarz: 'Na początku słowa przed spółgłoską "m" zapisujemy "zi".',
-    ilustracja: { typ: 'emoji', symbol: '🌨️', opis: 'Zimowy pejzaż' }
+    ilustracja: { typ: 'emoji', symbol: '🌨️', opis: 'Zimowy pejzaż' },
   },
   {
     id: 'zi-zielenina',
@@ -39,7 +40,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ź',
     pelne: 'zielenina',
     komentarz: 'Zapisujemy "zi" na początku wyrazu przed samogłoską "e".',
-    ilustracja: { typ: 'emoji', symbol: '🥬', opis: 'Liść sałaty' }
+    ilustracja: { typ: 'emoji', symbol: '🥬', opis: 'Liść sałaty' },
   },
   {
     id: 'zi-zle',
@@ -49,7 +50,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'zi',
     pelne: 'źle',
     komentarz: 'Przed spółgłoską "l" wybieramy literę "ź".',
-    ilustracja: { typ: 'emoji', symbol: '😕', opis: 'Niezadowolona mina' }
+    ilustracja: { typ: 'emoji', symbol: '😕', opis: 'Niezadowolona mina' },
   },
   {
     id: 'zi-zrebak',
@@ -59,7 +60,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'zi',
     pelne: 'źrebak',
     komentarz: 'Miękka głoska zapisywana literą "ź".',
-    ilustracja: { typ: 'emoji', symbol: '🐴', opis: 'Źrebak przy klaczy' }
+    ilustracja: { typ: 'emoji', symbol: '🐴', opis: 'Źrebak przy klaczy' },
   },
   {
     id: 'dzi-dziecko',
@@ -69,7 +70,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'dźe',
     pelne: 'dziecko',
     komentarz: 'Przed spółgłoską "c" zapisujemy "dzie".',
-    ilustracja: { typ: 'emoji', symbol: '🧒', opis: 'Uśmiechnięte dziecko' }
+    ilustracja: { typ: 'emoji', symbol: '🧒', opis: 'Uśmiechnięte dziecko' },
   },
   {
     id: 'dzi-dziura',
@@ -79,7 +80,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'dź',
     pelne: 'dziura',
     komentarz: 'Przed samogłoską "u" wybieramy "dzi".',
-    ilustracja: { typ: 'emoji', symbol: '🕳️', opis: 'Dziura w ziemi' }
+    ilustracja: { typ: 'emoji', symbol: '🕳️', opis: 'Dziura w ziemi' },
   },
   {
     id: 'dzi-chodzmy',
@@ -89,17 +90,17 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'dzi',
     pelne: 'chodźmy',
     komentarz: 'Tryb rozkazujący "chodźmy" zapisujemy z "dź".',
-    ilustracja: { typ: 'emoji', symbol: '🚶‍♂️', opis: 'Idąca osoba' }
+    ilustracja: { typ: 'emoji', symbol: '🚶‍♂️', opis: 'Idąca osoba' },
   },
   {
     id: 'dzi-dziennik',
     kategoria: 'dzi/dź',
-    lukowe: '_iennik',
+    lukowe: '_ennik',
     poprawna: 'dzi',
     alternatywa: 'dź',
     pelne: 'dziennik',
     komentarz: 'W środku wyrazu stosujemy "dzi".',
-    ilustracja: { typ: 'emoji', symbol: '📓', opis: 'Zeszyt szkolny' }
+    ilustracja: { typ: 'emoji', symbol: '📓', opis: 'Zeszyt szkolny' },
   },
   {
     id: 'dzi-dzien',
@@ -109,7 +110,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'dźe',
     pelne: 'dzień',
     komentarz: 'Przed literą "ń" zapisujemy połączenie "dzie".',
-    ilustracja: { typ: 'emoji', symbol: '🌅', opis: 'Wschód słońca' }
+    ilustracja: { typ: 'emoji', symbol: '🌅', opis: 'Wschód słońca' },
   },
   {
     id: 'dzi-dzwig',
@@ -119,7 +120,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'dzi',
     pelne: 'dźwig',
     komentarz: 'Na początku wyrazu przed spółgłoską używamy "dź".',
-    ilustracja: { typ: 'emoji', symbol: '🏗️', opis: 'Dźwig na budowie' }
+    ilustracja: { typ: 'emoji', symbol: '🏗️', opis: 'Dźwig na budowie' },
   },
   {
     id: 'ci-ciasto',
@@ -129,7 +130,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ć',
     pelne: 'ciasto',
     komentarz: '"ci" przed samogłoską "a".',
-    ilustracja: { typ: 'emoji', symbol: '🎂', opis: 'Tort urodzinowy' }
+    ilustracja: { typ: 'emoji', symbol: '🎂', opis: 'Tort urodzinowy' },
   },
   {
     id: 'ci-narciarz',
@@ -139,7 +140,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ć',
     pelne: 'narciarz',
     komentarz: '"ci" pomiędzy samogłoskami.',
-    ilustracja: { typ: 'emoji', symbol: '⛷️', opis: 'Narciarz na stoku' }
+    ilustracja: { typ: 'emoji', symbol: '⛷️', opis: 'Narciarz na stoku' },
   },
   {
     id: 'ci-cma',
@@ -149,7 +150,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ci',
     pelne: 'ćma',
     komentarz: 'Pojedyncza litera "ć".',
-    ilustracja: { typ: 'emoji', symbol: '🦋', opis: 'Ćma nocna' }
+    ilustracja: { typ: 'emoji', symbol: '🦋', opis: 'Ćma nocna' },
   },
   {
     id: 'ci-prac',
@@ -159,7 +160,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ci',
     pelne: 'prać',
     komentarz: 'Bezokolicznik zakończony na "-ać".',
-    ilustracja: { typ: 'emoji', symbol: '🧺', opis: 'Kosz na pranie' }
+    ilustracja: { typ: 'emoji', symbol: '🧺', opis: 'Kosz na pranie' },
   },
   {
     id: 'ci-ciuchy',
@@ -169,7 +170,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ć',
     pelne: 'ciuchy',
     komentarz: 'Na początku słowa przed samogłoską "u" zapisujemy "ci".',
-    ilustracja: { typ: 'emoji', symbol: '👕', opis: 'Ubrania na wieszaku' }
+    ilustracja: { typ: 'emoji', symbol: '👕', opis: 'Ubrania na wieszaku' },
   },
   {
     id: 'ci-cwiczyc',
@@ -179,7 +180,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ci',
     pelne: 'ćwiczyć',
     komentarz: 'Przed spółgłoską zapisujemy miękką literę "ć".',
-    ilustracja: { typ: 'emoji', symbol: '🏋️', opis: 'Osoba ćwicząca' }
+    ilustracja: { typ: 'emoji', symbol: '🏋️', opis: 'Osoba ćwicząca' },
   },
   {
     id: 'ni-sanie',
@@ -189,7 +190,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ń',
     pelne: 'sanie',
     komentarz: 'W środku wyrazu piszemy "ni".',
-    ilustracja: { typ: 'emoji', symbol: '🛷', opis: 'Sanie na śniegu' }
+    ilustracja: { typ: 'emoji', symbol: '🛷', opis: 'Sanie na śniegu' },
   },
   {
     id: 'ni-kon',
@@ -199,7 +200,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ni',
     pelne: 'koń',
     komentarz: 'Na końcu wyrazu stosujemy "ń".',
-    ilustracja: { typ: 'emoji', symbol: '🐎', opis: 'Koń na łące' }
+    ilustracja: { typ: 'emoji', symbol: '🐎', opis: 'Koń na łące' },
   },
   {
     id: 'ni-banka',
@@ -209,17 +210,17 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ni',
     pelne: 'bańka',
     komentarz: '"ń" przed spółgłoską "k".',
-    ilustracja: { typ: 'emoji', symbol: '🫧', opis: 'Bańka mydlana' }
+    ilustracja: { typ: 'emoji', symbol: '🫧', opis: 'Bańka mydlana' },
   },
   {
     id: 'ni-aniol',
     kategoria: 'ni/ń',
-    lukowe: '_oł',
+    lukowe: 'a_oł',
     poprawna: 'ani',
     alternatywa: 'ań',
     pelne: 'anioł',
     komentarz: 'Przed samogłoską "o" wybieramy "ni".',
-    ilustracja: { typ: 'emoji', symbol: '😇', opis: 'Uśmiechnięty anioł' }
+    ilustracja: { typ: 'emoji', symbol: '😇', opis: 'Uśmiechnięty anioł' },
   },
   {
     id: 'ni-niebo',
@@ -229,7 +230,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ń',
     pelne: 'niebo',
     komentarz: 'Na początku słowa przed samogłoską "e" piszemy "ni".',
-    ilustracja: { typ: 'emoji', symbol: '☁️', opis: 'Chmury na niebie' }
+    ilustracja: { typ: 'emoji', symbol: '☁️', opis: 'Chmury na niebie' },
   },
   {
     id: 'ni-slonce',
@@ -239,17 +240,17 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ni',
     pelne: 'słońce',
     komentarz: 'Przed spółgłoską "c" stosujemy literę "ń".',
-    ilustracja: { typ: 'emoji', symbol: '🌞', opis: 'Słońce na niebie' }
+    ilustracja: { typ: 'emoji', symbol: '🌞', opis: 'Słońce na niebie' },
   },
   {
     id: 'si-siatka',
     kategoria: 'si/ś',
-    lukowe: '_iatka',
+    lukowe: '_atka',
     poprawna: 'si',
     alternatywa: 'ś',
     pelne: 'siatka',
     komentarz: '"si" przed samogłoską "a".',
-    ilustracja: { typ: 'emoji', symbol: '🏐', opis: 'Piłka do siatkówki' }
+    ilustracja: { typ: 'emoji', symbol: '🏐', opis: 'Piłka do siatkówki' },
   },
   {
     id: 'si-snieg',
@@ -259,7 +260,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'si',
     pelne: 'śnieg',
     komentarz: 'Początek słowa zapisujemy literą "ś".',
-    ilustracja: { typ: 'emoji', symbol: '☃️', opis: 'Bałwan na śniegu' }
+    ilustracja: { typ: 'emoji', symbol: '☃️', opis: 'Bałwan na śniegu' },
   },
   {
     id: 'si-lisc',
@@ -269,7 +270,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'si',
     pelne: 'liść',
     komentarz: '"ś" przed literą "ć".',
-    ilustracja: { typ: 'emoji', symbol: '🍁', opis: 'Jesienny liść' }
+    ilustracja: { typ: 'emoji', symbol: '🍁', opis: 'Jesienny liść' },
   },
   {
     id: 'si-slimak',
@@ -279,7 +280,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'si',
     pelne: 'ślimak',
     komentarz: 'Na początku słowa piszemy "ś".',
-    ilustracja: { typ: 'emoji', symbol: '🐌', opis: 'Ślimak z muszlą' }
+    ilustracja: { typ: 'emoji', symbol: '🐌', opis: 'Ślimak z muszlą' },
   },
   {
     id: 'si-siano',
@@ -289,7 +290,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'ś',
     pelne: 'siano',
     komentarz: 'Na początku słowa przed samogłoską "a" piszemy "si".',
-    ilustracja: { typ: 'emoji', symbol: '🐄', opis: 'Stóg siana' }
+    ilustracja: { typ: 'emoji', symbol: '🐄', opis: 'Stóg siana' },
   },
   {
     id: 'si-swiatlo',
@@ -299,6 +300,116 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     alternatywa: 'si',
     pelne: 'światło',
     komentarz: 'Na początku słowa przed spółgłoską "w" wybieramy literę "ś".',
-    ilustracja: { typ: 'emoji', symbol: '💡', opis: 'Żarówka świecąca światłem' }
-  }
+    ilustracja: {
+      typ: 'emoji',
+      symbol: '💡',
+      opis: 'Żarówka świecąca światłem',
+    },
+  },
+  // dodatkowe przykłady
+  {
+    id: 'zi-zrodlo',
+    kategoria: 'zi/ź',
+    lukowe: '_ródło',
+    poprawna: 'ź',
+    alternatywa: 'zi',
+    pelne: 'źródło',
+    komentarz: 'Na początku wyrazu przed spółgłoską "r" zapisujemy "ź".',
+    ilustracja: { typ: 'emoji', symbol: '💧', opis: 'Źródło wody' },
+  },
+  {
+    id: 'zi-ziewac',
+    kategoria: 'zi/ź',
+    lukowe: '_ewać',
+    poprawna: 'zi',
+    alternatywa: 'ź',
+    pelne: 'ziewać',
+    komentarz:
+      'Przed samogłoską "e" zapisujemy "zi" (chociaż słyszymy miękko).',
+    ilustracja: { typ: 'emoji', symbol: '😴', opis: 'Osoba ziewająca' },
+  },
+  {
+    id: 'dzi-dziadek',
+    kategoria: 'dzi/dź',
+    lukowe: '_adek',
+    poprawna: 'dzi',
+    alternatywa: 'dź',
+    pelne: 'dziadek',
+    komentarz: 'Na początku wyrazu przed samogłoską "a" zapisujemy "dzi".',
+    ilustracja: { typ: 'emoji', symbol: '👴', opis: 'Starszy mężczyzna' },
+  },
+  {
+    id: 'dzi-dzwiek',
+    kategoria: 'dzi/dź',
+    lukowe: '_więk',
+    poprawna: 'dź',
+    alternatywa: 'dzi',
+    pelne: 'dźwięk',
+    komentarz: 'Na początku wyrazu przed spółgłoską "w" zapisujemy "dź".',
+    ilustracja: { typ: 'emoji', symbol: '🔊', opis: 'Głośnik wydający dźwięk' },
+  },
+  {
+    id: 'ci-cieplo',
+    kategoria: 'ci/ć',
+    lukowe: '_epło',
+    poprawna: 'ci',
+    alternatywa: 'ć',
+    pelne: 'ciepło',
+    komentarz: 'Przed spółgłoską lub samogłoską "e" zapisujemy "ci".',
+    ilustracja: { typ: 'emoji', symbol: '🌡️', opis: 'Termometr' },
+  },
+  {
+    id: 'ci-ciekawy',
+    kategoria: 'ci/ć',
+    lukowe: '_ekawy',
+    poprawna: 'ci',
+    alternatywa: 'ć',
+    pelne: 'ciekawy',
+    komentarz: '„ci” pojawia się przed samogłoską "e" i tworzy dźwięk miękki.',
+    ilustracja: {
+      typ: 'emoji',
+      symbol: '🤔',
+      opis: 'Zastanawiająca się twarz',
+    },
+  },
+  {
+    id: 'ni-ponczocha',
+    kategoria: 'ni/ń',
+    lukowe: 'po_czocha',
+    poprawna: 'ń',
+    alternatywa: 'ni',
+    pelne: 'pończocha',
+    komentarz: 'Przed spółgłoską "c" występuje "ń".',
+    ilustracja: { typ: 'emoji', symbol: '🧦', opis: 'Pończocha' },
+  },
+  {
+    id: 'ni-wieniec',
+    kategoria: 'ni/ń',
+    lukowe: 'wie_ec',
+    poprawna: 'wie',
+    alternatywa: 'wiń',
+    pelne: 'wieniec',
+    komentarz: 'Przykład z "ni" w środku; ćwiczymy rozpoznawanie miękkości.',
+    ilustracja: { typ: 'emoji', symbol: '🎀', opis: 'Wieniec' },
+  },
+  {
+    id: 'si-smietana',
+    kategoria: 'si/ś',
+    lukowe: '_mietana',
+    poprawna: 'ś',
+    alternatywa: 'si',
+    pelne: 'śmietana',
+    komentarz: 'Na początku wyrazu przed spółgłoską "m" zapisujemy "ś".',
+    ilustracja: { typ: 'emoji', symbol: '🥛', opis: 'Kubek ze śmietaną' },
+  },
+  {
+    id: 'si-silnik',
+    kategoria: 'si/ś',
+    lukowe: '_lnik',
+    poprawna: 'si',
+    alternatywa: 'ś',
+    pelne: 'silnik',
+    komentarz: 'Przed spółgłoską "l" zapisujemy "si".',
+    ilustracja: { typ: 'emoji', symbol: '🔩', opis: 'Część silnika' },
+  },
 ];
