@@ -64,7 +64,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
   {
     id: 'dzi-chodzmy',
     kategoria: 'dzi/dź',
-    lukowe: 'cho__my',
+    lukowe: 'cho_my',
     poprawna: 'dź',
     alternatywa: 'dzi',
     pelne: 'chodźmy',
@@ -94,7 +94,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
   {
     id: 'ci-narciarz',
     kategoria: 'ci/ć',
-    lukowe: 'nar__arz',
+    lukowe: 'nar_arz',
     poprawna: 'ci',
     alternatywa: 'ć',
     pelne: 'narciarz',
@@ -194,7 +194,7 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
   {
     id: 'si-slimak',
     kategoria: 'si/ś',
-    lukowe: '__limak',
+    lukowe: '_limak',
     poprawna: 'ś',
     alternatywa: 'si',
     pelne: 'ślimak',
