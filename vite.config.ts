@@ -1,6 +1,13 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import { webcrypto } from 'node:crypto';
+
+const globalForCrypto = globalThis as typeof globalThis & { crypto?: typeof webcrypto };
+
+if (!globalForCrypto.crypto) {
+  globalForCrypto.crypto = webcrypto;
+}
 
 export default defineConfig({
   plugins: [
