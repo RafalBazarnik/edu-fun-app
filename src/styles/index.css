@@ -269,6 +269,41 @@ a {
   min-width: min(320px, 100%);
 }
 
+.stats__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.stats__toggle {
+  border: none;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1f3c88;
+  font-weight: 700;
+  padding: 0.35rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: background-color 150ms ease, transform 150ms ease;
+}
+
+.stats__toggle:hover {
+  background: #cbd5f5;
+  transform: translateY(-1px);
+}
+
+.stats__toggle:focus-visible {
+  outline: 3px solid #fcd34d;
+  outline-offset: 3px;
+}
+
+.stats__toggle-icon {
+  font-size: 0.85rem;
+}
+
 .stats__title {
   margin: 0;
   font-size: 1.25rem;
@@ -324,6 +359,52 @@ a {
   margin: 0;
   font-size: 0.9rem;
   text-align: center;
+}
+
+.stats__content[hidden] {
+  display: none;
+}
+
+.stats__summary {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #475569;
+  background: #fff;
+  padding: 0.75rem 1rem;
+  border-radius: 16px;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.stats--compact {
+  gap: 1rem;
+}
+
+.stats--compact .stats__header {
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 1;
+}
+
+.stats--compact .stats__toggle {
+  background: transparent;
+  color: #1f3c88;
+}
+
+.stats--compact .stats__toggle:hover {
+  background: rgba(219, 234, 254, 0.7);
+}
+
+.stats--compact .stats__summary {
+  font-size: 0.9rem;
+}
+
+.stats--compact.stats--expanded .stats__summary {
+  display: none;
+}
+
+.stats--compact .progress__label {
+  font-size: 0.85rem;
 }
 
 .summary__stats {
@@ -407,6 +488,45 @@ a {
   .progress,
   .progress__label {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .exercise {
+    gap: 1.5rem;
+  }
+
+  .exercise__main {
+    gap: 1.25rem;
+  }
+
+  .task-card {
+    gap: 1.25rem;
+    padding: 1.75rem 1.25rem;
+  }
+
+  .task-card__feedback {
+    background: #fff;
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .exercise__controls {
+    position: sticky;
+    bottom: 0.75rem;
+    background: rgba(248, 250, 252, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 0.75rem;
+    border-radius: 20px;
+    box-shadow: 0 -12px 32px rgba(15, 23, 42, 0.18);
+    z-index: 5;
+  }
+
+  .stats--compact {
+    position: relative;
   }
 }
 
