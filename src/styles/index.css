@@ -174,7 +174,7 @@ a {
 }
 
 .task-card__media {
-  width: 100%;
+  width: min(18rem, 70%);
   aspect-ratio: 1 / 1;
   border-radius: 20px;
   overflow: hidden;
@@ -182,16 +182,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 0 auto;
 }
 
 .task-card__emoji {
-  font-size: clamp(4rem, 12vw, 7rem);
+  font-size: clamp(3rem, 10vw, 4.5rem);
   line-height: 1;
 }
 
 .task-card__media svg {
-  width: 60%;
-  height: 60%;
+  width: 55%;
+  height: 55%;
 }
 
 .task-card__options {
