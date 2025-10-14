@@ -52,9 +52,16 @@ export default function StatsPanel() {
     [postep, sumaZadan, wykonane]
   );
 
+  const collapsed = isCompact && !expanded;
+
   return (
     <aside
-      className={classNames('stats', isCompact && 'stats--compact', expanded && 'stats--expanded')}
+      className={classNames(
+        'stats',
+        isCompact && 'stats--compact',
+        expanded && 'stats--expanded',
+        collapsed && 'stats--collapsed'
+      )}
       aria-live="polite"
     >
       <div className="stats__header">
@@ -73,12 +80,12 @@ export default function StatsPanel() {
           </button>
         )}
       </div>
-      {isCompact && !expanded && (
+      {collapsed && (
         <p className="stats__summary" aria-live="polite">
           {summary}
         </p>
       )}
-      <div className="stats__content" hidden={isCompact && !expanded}>
+      <div className="stats__content" hidden={collapsed}>
         <div className="stats__grid">
           <div className="stats__item">
             <span className="stats__label">Rozwiązane</span>
