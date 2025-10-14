@@ -125,6 +125,26 @@ export interface ZadanieZgloski {
 - W podsumowaniu prezentowany jest wykres kołowy lub pasek procentowy oraz lista słów z oznaczeniem ✅/❌.
 - Możliwość pobrania wyników (np. jako zrzut ekranu) do przekazania rodzicowi/nauczycielowi.
 
+### Trwałość danych i historia sesji
+- **Mechanizm zapisu:** wyniki każdej próby (identyfikator zadania, poprawność, czas odpowiedzi, znaczniki czasowe rozpoczęcia/zakończenia sesji) są zapisywane w `localStorage` pod kluczem `zabawy-ze-zgloskami/sesje`. Dane przechowywane są w formacie JSON jako lista sesji, z której każda zawiera:
+  - metadane sesji (`sessionId`, `startedAt`, `finishedAt`),
+  - zagregowane statystyki (`attempts`, `correct`, `mistakes`, `accuracy`),
+  - tablicę prób z informacjami o każdym ćwiczeniu (`taskId`, wybrana zgłoska, poprawność, znacznik czasu odpowiedzi).
+- **Aktualizacja zapisu:** po zakończeniu ćwiczenia dane sesji są scalane z istniejącą listą, a jeżeli w `localStorage` znajduje się starsza wersja struktur, aplikacja wykonuje migrację (np. dodanie brakujących pól z wartościami domyślnymi).
+- **Fallback:** w przypadku braku wsparcia dla `localStorage` aplikacja działa w trybie sesyjnym (tylko pamięć w RAM) i komunikuje użytkownikowi brak trwałego zapisu.
+
+### Raport sesji w menu głównym
+- Ekran startowy prezentuje zwijany panel „Raport sesji” z nagłówkiem oraz ikoną strzałki sygnalizującą możliwość rozwinęcia.
+- Po rozwinięciu panelu wyświetlane są maksymalnie trzy ostatnie sesje z `localStorage`: data i godzina zakończenia, liczba poprawnych odpowiedzi, skuteczność, liczba zadań.
+- Każdy wiersz posiada przycisk „Szczegóły”, który otwiera modal lub boczny panel z pełną listą prób (słowo, wybrana zgłoska, status ✅/❌, czas odpowiedzi).
+- Jeśli brak zapisanych sesji, panel pokazuje informację „Brak zapisanych wyników — rozpocznij pierwsze ćwiczenie!” oraz instrukcję, że wyniki zapisują się automatycznie po zakończeniu.
+
+### Retencja i reset danych
+- Domyślnie przechowywane są maksymalnie 20 ostatnich sesji; dodanie nowej sesji usuwa najstarszy rekord, aby zapobiegać nadmiernemu zużyciu pamięci.
+- W menu ustawień oraz na ekranie podsumowania pozostaje dostępny przycisk „Usuń historię”, który usuwa klucz `zabawy-ze-zgloskami/sesje` z `localStorage` po potwierdzeniu użytkownika.
+- Po restarcie ćwiczenia (przycisk „Powtórz ćwiczenie”) zaczyna się nowa sesja, lecz poprzednia pozostaje w historii do momentu ręcznego usunięcia.
+- Dodatkowo aplikacja raz na 30 dni sprawdza znaczniki czasu w historii i automatycznie usuwa sesje starsze niż 90 dni, co minimalizuje ryzyko przechowywania nieaktualnych danych.
+
 ## Kolejne kroki rozwoju
 1. Przygotowanie prototypu UI (Figma / szkice papierowe).
 2. Implementacja struktury projektu w Vite + React + TypeScript.
