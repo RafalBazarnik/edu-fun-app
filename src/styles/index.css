@@ -23,7 +23,7 @@ a {
   display: flex;
   justify-content: center;
   align-items: stretch;
-  padding: 2rem 1rem;
+  padding: clamp(1.5rem, 2vw + 1rem, 3rem) clamp(1rem, 2vw + 0.5rem, 2rem);
 }
 
 .panel,
@@ -74,6 +74,7 @@ a {
   background: #eff6ff;
   padding: 1rem 1.5rem;
   border-radius: 16px;
+  text-align: center;
 }
 
 .fieldset {
@@ -138,7 +139,8 @@ a {
 .exercise {
   display: grid;
   gap: 2rem;
-  grid-template-columns: minmax(0, 2fr) minmax(260px, 1fr);
+  grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr);
+  align-items: start;
 }
 
 .exercise__main {
@@ -264,7 +266,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  min-width: 240px;
+  min-width: min(320px, 100%);
 }
 
 .stats__title {
@@ -388,9 +390,23 @@ a {
     grid-template-columns: 1fr;
   }
 
+  .exercise__main {
+    order: 2;
+  }
+
   .stats {
-    flex-direction: row;
-    align-items: center;
+    order: 1;
+    min-width: 100%;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .stats__title,
+  .stats__grid,
+  .progress,
+  .progress__label {
+    grid-column: 1 / -1;
   }
 }
 
@@ -411,5 +427,38 @@ a {
 
   .choice {
     font-size: 1.25rem;
+  }
+
+  .panel__content {
+    align-items: stretch;
+  }
+
+  .info {
+    text-align: left;
+  }
+
+  .summary__item {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: auto auto;
+    align-items: start;
+  }
+
+  .summary__answer {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .task-card__media {
+    width: 100%;
+  }
+
+  .task-card__options {
+    grid-template-columns: 1fr;
+  }
+
+  .exercise__controls .btn,
+  .panel__footer .btn {
+    width: 100%;
   }
 }
