@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../context/SessionContext';
 
 function cn(...klasy: Array<string | false | undefined>): string {
@@ -6,7 +6,8 @@ function cn(...klasy: Array<string | false | undefined>): string {
 }
 
 export default function TaskCard() {
-  const { aktualneZadanie, udzielOdpowiedzi, odpowiedzi } = useSession();
+  const { aktualneZadanie, udzielOdpowiedzi, odpowiedzi, nastepneZadanie } = useSession();
+  const [showModal, setShowModal] = useState(false);
 
   const ostatniaOdpowiedz = useMemo(() => {
     if (!aktualneZadanie) {
@@ -33,6 +34,33 @@ export default function TaskCard() {
   }, [aktualneZadanie]);
 
   const pokazKomentarz = Boolean(ostatniaOdpowiedz && aktualneZadanie.komentarz);
+
+  useEffect(() => {
+    if (ostatniaOdpowiedz) {
+      setShowModal(true);
+    } else {
+      setShowModal(false);
+    }
+  }, [ostatniaOdpowiedz]);
+
+  useEffect(() => {
+    if (typeof document === 'undefined') {
+      return undefined;
+    }
+    if (showModal) {
+      const previousOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = previousOverflow;
+      };
+    }
+    return undefined;
+  }, [showModal]);
+
+  const zamknijModal = () => {
+    setShowModal(false);
+    nastepneZadanie();
+  };
 
   return (
     <article className="task-card" aria-live="polite">
@@ -85,18 +113,23 @@ export default function TaskCard() {
           );
         })}
       </div>
-      {ostatniaOdpowiedz && (
-        <footer className="task-card__feedback">
-          <p className={cn('feedback', ostatniaOdpowiedz.poprawna ? 'feedback--correct' : 'feedback--wrong')}>
-            {ostatniaOdpowiedz.poprawna
-              ? 'Brawo! To prawidłowa odpowiedź.'
-              : 'Spróbuj zapamiętać prawidłowy zapis.'}
-          </p>
-          <p className="feedback__solution">
-            Poprawne słowo: <strong>{aktualneZadanie.pelne}</strong>
-          </p>
-          {pokazKomentarz && <p className="feedback__hint">{aktualneZadanie.komentarz}</p>}
-        </footer>
+      {ostatniaOdpowiedz && showModal && (
+        <div className="feedback-modal" role="dialog" aria-modal="true" aria-label="Informacja zwrotna">
+          <div className="feedback-modal__dialog">
+            <p className={cn('feedback', ostatniaOdpowiedz.poprawna ? 'feedback--correct' : 'feedback--wrong')}>
+              {ostatniaOdpowiedz.poprawna
+                ? 'Brawo! To prawidłowa odpowiedź.'
+                : 'Spróbuj zapamiętać prawidłowy zapis.'}
+            </p>
+            <p className="feedback__solution">
+              Poprawne słowo: <strong>{aktualneZadanie.pelne}</strong>
+            </p>
+            {pokazKomentarz && <p className="feedback__hint">{aktualneZadanie.komentarz}</p>}
+            <button type="button" className="btn btn--primary feedback-modal__action" onClick={zamknijModal}>
+              {`Dalej`}
+            </button>
+          </div>
+        </div>
       )}
     </article>
   );
