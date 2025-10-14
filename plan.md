@@ -125,6 +125,34 @@ export interface ZadanieZgloski {
 - W podsumowaniu prezentowany jest wykres kołowy lub pasek procentowy oraz lista słów z oznaczeniem ✅/❌.
 - Możliwość pobrania wyników (np. jako zrzut ekranu) do przekazania rodzicowi/nauczycielowi.
 
+## Nowe ćwiczenie: „Samogłoski vs Spółgłoski”
+
+### Założenia dydaktyczne
+- Ćwiczenie wzmacnia rozpoznawanie samogłosek i spółgłosek poprzez szybkie klasyfikowanie pojedynczych liter.
+- Wykorzystuje istniejący przepływ quizu (ekran powitalny → panel ćwiczenia → statystyki/podsumowanie), zastępując słowa pojedynczymi literami w wariantach wielkich i małych.
+- Odpowiedzi są prezentowane w dwóch kafelkach: „Samogłoska” oraz „Spółgłoska”.
+
+### Przebieg użytkownika
+1. Ekran powitalny zawiera dedykowany opis zadania i informację, że litery mogą występować jako małe lub wielkie.
+2. Po rozpoczęciu sesji panel ćwiczenia losowo wyświetla pojedynczą literę (np. „A” lub „b”) w postaci dużej karty.
+3. Użytkownik wybiera kategorię (samogłoska/spółgłoska); po wyborze pojawia się natychmiastowa informacja zwrotna identyczna jak w bazowym ćwiczeniu.
+4. Panel statystyk i ekran podsumowania korzystają z tej samej logiki wyświetlania co w ćwiczeniu zmiękczających zgłosek.
+
+### Notatki dotyczące UI
+- Typografia: litery na kartach wyświetlane fontem bezszeryfowym o masie `700`, rozmiar bazowy minimum `6rem` na telefonach i `8rem` na tabletach, z proporcjonalnym skalowaniem do szerokości ekranu (np. `clamp(4rem, 18vw, 8rem)`).
+- Karty liter mają minimalny rozmiar `min(60vw, 280px)` z marginesami `1rem` na urządzeniach mobilnych i `2rem` na szerszych ekranach.
+- Przyciski odpowiedzi ustawione w kolumnie na wąskich ekranach (gap `1.25rem`) i w wierszu na tabletach (`min-width: 768px`) z dodatkowym `padding`em `1rem 1.5rem`.
+- Zapewnienie kontrastu tła karty co najmniej 4.5:1 oraz zastosowanie zaokrąglonych rogów (`border-radius: 1.5rem`) dla łatwiejszej percepcji na dotykowych urządzeniach.
+- Dodatkowe `letter-spacing: 0.1em` dla wielkich liter, aby uniknąć optycznego zlewania na małych ekranach.
+
+### Kryteria akceptacyjne
+- Losowanie liter obejmuje pełen zestaw alfabetu łacińskiego używanego w języku polskim, z równą szansą na wersję wielką i małą każdej litery.
+- W jednej sesji litery nie powtarzają się do wyczerpania puli, tak jak w obecnym mechanizmie ćwiczeń ze zgłoskami.
+- Walidacja odpowiedzi ponownie wykorzystuje istniejącą infrastrukturę: wynik pozytywny przy poprawnym dopasowaniu kategorii oraz negatywny z komentarzem przy błędzie.
+- System statystyk odnotowuje wynik w ten sam sposób, aktualizując liczniki i procent skuteczności bez dodatkowej konfiguracji.
+- Jednostkowe testy (lub manualna lista kontrolna) potwierdzają, że wszystkie samogłoski (`a, e, i, o, u, y, ą, ę`) są identyfikowane jako poprawne odpowiedzi dla kafelka „Samogłoska”.
+- Litery niebędące samogłoskami w powyższej puli są oceniane jako „Spółgłoska”, zachowując parytet z istniejącym frameworkiem ćwiczeń.
+
 ## Kolejne kroki rozwoju
 1. Przygotowanie prototypu UI (Figma / szkice papierowe).
 2. Implementacja struktury projektu w Vite + React + TypeScript.
