@@ -38,11 +38,9 @@ export default function StartScreen() {
   return (
     <section className="panel start-panel">
       <header className="panel__header">
-        <h1 className="tytul">Zabawy ze zgłoskami</h1>
+        <h1 className="tytul">Trener edukcaji domowej</h1>
         <p className="lead">
-          Ćwiczenie pomaga zapamiętać, kiedy piszemy <strong>zi/ź</strong>,{' '}
-          <strong>dzi/dź</strong>, <strong>ci/ć</strong>, <strong>ni/ń</strong> oraz{' '}
-          <strong>si/ś</strong>.
+          Nauczy dziecko co szkoła powinna nauczyć!!!
         </p>
       </header>
       <div className="panel__content">
