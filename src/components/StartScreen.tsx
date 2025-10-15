@@ -95,7 +95,7 @@ export default function StartScreen() {
               className="btn btn--primary module-card__cta"
               onClick={() => rozpocznij('gloski-zmiekczajace')}
             >
-              Rozpocznij ćwiczenie
+              Rozpocznij
             </button>
           </article>
           <article className="module-card module-card--primary">
@@ -122,7 +122,7 @@ export default function StartScreen() {
               className="btn btn--primary module-card__cta"
               onClick={() => rozpocznij('samogloski-vs-spolgloski')}
             >
-              Rozpocznij klasyfikację liter
+              Rozpocznij
             </button>
           </article>
           <article className="module-card module-card--primary">
@@ -149,7 +149,7 @@ export default function StartScreen() {
               className="btn btn--primary module-card__cta"
               onClick={() => rozpocznij('odczytywanie-czasu')}
             >
-              Rozpocznij trening zegara
+              Rozpocznij
             </button>
           </article>
         </div>
