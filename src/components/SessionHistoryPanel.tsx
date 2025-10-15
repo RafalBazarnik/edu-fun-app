@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSession } from '../context/SessionContext';
+import type { TrybCwiczenia } from '../context/SessionContext';
 
 function formatDate(timestamp: number): string {
   try {
@@ -10,6 +11,15 @@ function formatDate(timestamp: number): string {
   } catch (error) {
     return new Date(timestamp).toLocaleString();
   }
+}
+
+const NAZWY_TRYBOW: Record<TrybCwiczenia, string> = {
+  'gloski-zmiekczajace': 'Głoski zmiękczające',
+  'samogloski-vs-spolgloski': 'Samogłoski vs Spółgłoski'
+};
+
+function nazwijTryb(tryb: TrybCwiczenia): string {
+  return NAZWY_TRYBOW[tryb] ?? tryb;
 }
 
 export default function SessionHistoryPanel() {
@@ -61,7 +71,7 @@ export default function SessionHistoryPanel() {
                     <div className="history__row">
                       <span className="history__date">{formatDate(sesja.finishedAt)}</span>
                       <span className="history__stats">
-                        Wynik: {sesja.correct}/{sesja.attempts} • Skuteczność {sesja.accuracy}%
+                        Tryb: {nazwijTryb(sesja.tryb)} • Wynik: {sesja.correct}/{sesja.attempts} • Skuteczność {sesja.accuracy}%
                       </span>
                     </div>
                     <button
@@ -97,8 +107,8 @@ export default function SessionHistoryPanel() {
               </button>
             </header>
             <p className="history-modal__summary">
-              {wybranaSesja.correct}/{wybranaSesja.attempts} poprawnych odpowiedzi • Skuteczność{' '}
-              {wybranaSesja.accuracy}%
+              Tryb: {nazwijTryb(wybranaSesja.tryb)} • {wybranaSesja.correct}/{wybranaSesja.attempts} poprawnych odpowiedzi •
+              Skuteczność {wybranaSesja.accuracy}%
             </p>
             <ul className="history-modal__list">
               {wybranaSesja.proby.map((proba) => (

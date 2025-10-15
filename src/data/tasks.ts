@@ -1,6 +1,6 @@
-import type { ZadanieZgloski } from '../context/SessionContext';
+import type { ZadanieLitera, ZadanieZgloski } from '../context/SessionContext';
 
-export const zadaniaZgloski: ZadanieZgloski[] = [
+const bazoweZadaniaZgloski = [
   {
     id: 'zi-ziemniak',
     kategoria: 'zi/ź',
@@ -412,4 +412,65 @@ export const zadaniaZgloski: ZadanieZgloski[] = [
     komentarz: 'Przed spółgłoską "l" zapisujemy "si".',
     ilustracja: { typ: 'emoji', symbol: '🔩', opis: 'Część silnika' },
   },
+] satisfies Array<Omit<ZadanieZgloski, 'typ'>>;
+
+export const zadaniaZgloski: ZadanieZgloski[] = bazoweZadaniaZgloski.map((zadanie) => ({
+  ...zadanie,
+  typ: 'zgloska',
+}));
+
+const samogloski = new Set(['a', 'ą', 'e', 'ę', 'i', 'o', 'ó', 'u', 'y']);
+const literyBazowe = [
+  'a',
+  'ą',
+  'b',
+  'c',
+  'ć',
+  'd',
+  'e',
+  'ę',
+  'f',
+  'g',
+  'h',
+  'i',
+  'j',
+  'k',
+  'l',
+  'ł',
+  'm',
+  'n',
+  'ń',
+  'o',
+  'ó',
+  'p',
+  'r',
+  's',
+  'ś',
+  't',
+  'u',
+  'w',
+  'y',
+  'z',
+  'ź',
+  'ż',
 ];
+
+const wszystkieLitery = literyBazowe.flatMap((litera) => [litera, litera.toUpperCase()]);
+
+export const zadaniaSamogloskiVsSpolgloski: ZadanieLitera[] = wszystkieLitery.map((litera) => {
+  const lower = litera.toLowerCase();
+  const samogloska = samogloski.has(lower);
+  const poprawna = samogloska ? 'Samogłoska' : 'Spółgłoska';
+  const alternatywa = samogloska ? 'Spółgłoska' : 'Samogłoska';
+
+  return {
+    id: `litera-${lower}-${litera === lower ? 'mala' : 'duza'}`,
+    typ: 'litera',
+    kategoria: 'samogloski-vs-spolgloski',
+    litera,
+    pelne: litera,
+    poprawna,
+    alternatywa,
+    komentarz: `Litera ${litera} to ${poprawna.toLowerCase()}.`,
+  } satisfies ZadanieLitera;
+});

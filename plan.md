@@ -12,16 +12,16 @@
 ## Zakres funkcjonalny
 1. **Ekran powitalny**
    - Nazwa aplikacji i krótki opis zasad.
-   - Menu startowe w formie listy/kafelków prezentującej moduły ćwiczeń; pierwszy element to „Głoski zmiękczające” z krótką zajawką (np. liczba słówek, przewidywany czas).
-   - Każda pozycja menu posiada wyróżniony przycisk CTA („Rozpocznij”) oraz miejsce na przyszłe moduły, aby można było łatwo dodawać kolejne ćwiczenia.
+   - Menu startowe w formie listy/kafelków prezentującej aktywne moduły: „Głoski zmiękczające” (z licznikiem słówek oraz filtrowaniem ilustracji) oraz nową grę „Samogłoski vs Spółgłoski” losującą wszystkie litery alfabetu polskiego w wersji małej i wielkiej.
+   - Każda pozycja menu posiada wyróżniony przycisk CTA („Rozpocznij”), sekcję z ostatnimi wynikami danego trybu oraz miejsce na przyszłe moduły.
    - Na desktopie menu układa się w 2–3 kolumny z czytelnymi kafelkami; na urządzeniach mobilnych przechodzi w pojedynczą kolumnę z dużymi polami dotykowymi i poziomym przewijaniem, gdy pojawi się więcej niż trzy moduły.
-   - Informacja o liczbie zadań dostępnych w puli oraz skrót statystyk z ostatniej sesji, jeśli istnieją.
+   - Informacja o liczbie zadań dostępnych w puli oraz skrót statystyk z ostatniej sesji dla każdego trybu, jeśli istnieją.
 2. **Panel ćwiczenia**
-   - Wyświetlanie słowa z luką w miejscu zgłoski zmiękczającej.
-   - Ilustracja (lokalny plik PNG/SVG) lub neutralna ikona, jeśli ilustracja niedostępna.
-   - Instrukcja: „Wybierz poprawną zgłoskę”.
-   - Dwa kafelki do wyboru (poprawna i myląca zgłoska).
-   - Po wyborze wyświetlenie informacji zwrotnej (kolor/animacja, poprawne słowo, krótki komentarz).
+   - Wyświetlanie słowa z luką w miejscu zgłoski zmiękczającej lub pojedynczej litery do klasyfikacji (dla trybu samogłoski/spółgłoski).
+   - Ilustracja (lokalny plik PNG/SVG) lub neutralna ikona w trybie zgłosek; w trybie literowym litera prezentowana jest na dużej karcie typograficznej.
+   - Instrukcja dopasowana do trybu („Wybierz poprawną zgłoskę” / „Określ, czy litera jest samogłoską czy spółgłoską”).
+   - Dwa kafelki do wyboru z natychmiastową informacją zwrotną.
+   - Po wyborze wyświetlenie informacji zwrotnej (kolor/animacja, poprawne słowo/litera, krótki komentarz).
    - Przycisk „Następne zadanie” do przejścia dalej.
 3. **Statystyki w czasie rzeczywistym**
    - Liczba rozwiązanych zadań, liczba poprawnych odpowiedzi, liczba błędów, procent skuteczności.
@@ -77,9 +77,23 @@ export interface ZadanieZgloski {
   komentarz?: string;   // krótka wskazówka językowa
   obraz?: string;       // np. "images/ziemniak.png"
 }
+
+export interface ZadanieLitera {
+  id: string;
+  typ: "litera";
+  litera: string;                  // np. "Ą" lub "ź"
+  kategoria: "samogloski-vs-spolgloski";
+  poprawna: "Samogłoska" | "Spółgłoska";
+  alternatywa: "Samogłoska" | "Spółgłoska";
+  pelne: string;                   // kopia litery do raportów
+  komentarz: string;               // np. "Litera Ą to samogłoska."
+}
+
+type Zadanie = ZadanieZgloski | ZadanieLitera;
 ```
-- Wszystkie pola tekstowe przechowywane w małych literach, aby uprościć porównania.
-- Pole `komentarz` pozwala dodać wskazówkę (np. „W wyrazie *ziemniak* słyszymy *ź*, ale piszemy *zi*.”).
+- Wszystkie pola tekstowe przechowywane są w spójnej formie (litery/małe litery) – dla trybu literowego generowane są równocześnie warianty małe i wielkie.
+- Pole `komentarz` pozwala dodać wskazówkę (np. „W wyrazie *ziemniak* słyszymy *ź*, ale piszemy *zi*.” / „Litera Ę to samogłoska.”).
+- Zadania literowe generowane są programowo na podstawie pełnego alfabetu polskiego (32 litery × dwa warianty zapisu = 64 zadania w jednej sesji).
 
 ## Pula słów (wersja początkowa)
 
@@ -128,7 +142,9 @@ export interface ZadanieZgloski {
 - W podsumowaniu prezentowany jest wykres kołowy lub pasek procentowy oraz lista słów z oznaczeniem ✅/❌.
 - Możliwość pobrania wyników (np. jako zrzut ekranu) do przekazania rodzicowi/nauczycielowi.
 
-## Nowe ćwiczenie: „Samogłoski vs Spółgłoski”
+## Ćwiczenie „Samogłoski vs Spółgłoski”
+
+**Status:** wdrożone – dostępne z ekranu głównego obok trybu zgłosek zmiękczających.
 
 ### Założenia dydaktyczne
 - Ćwiczenie wzmacnia rozpoznawanie samogłosek i spółgłosek poprzez szybkie klasyfikowanie pojedynczych liter.
@@ -148,7 +164,7 @@ export interface ZadanieZgloski {
 - Zapewnienie kontrastu tła karty co najmniej 4.5:1 oraz zastosowanie zaokrąglonych rogów (`border-radius: 1.5rem`) dla łatwiejszej percepcji na dotykowych urządzeniach.
 - Dodatkowe `letter-spacing: 0.1em` dla wielkich liter, aby uniknąć optycznego zlewania na małych ekranach.
 
-### Kryteria akceptacyjne
+### Kryteria akceptacyjne (spełnione)
 - Losowanie liter obejmuje pełen zestaw alfabetu łacińskiego używanego w języku polskim, z równą szansą na wersję wielką i małą każdej litery.
 - W jednej sesji litery nie powtarzają się do wyczerpania puli, tak jak w obecnym mechanizmie ćwiczeń ze zgłoskami.
 - Walidacja odpowiedzi ponownie wykorzystuje istniejącą infrastrukturę: wynik pozytywny przy poprawnym dopasowaniu kategorii oraz negatywny z komentarzem przy błędzie.

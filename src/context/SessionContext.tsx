@@ -1,9 +1,10 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import type { ReactNode } from 'react';
-import { zadaniaZgloski } from '../data/tasks';
+import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
 
 export type Widok = 'welcome' | 'exercise' | 'summary';
 export type FiltrZadan = 'all' | 'withIllustrations';
+export type TrybCwiczenia = 'gloski-zmiekczajace' | 'samogloski-vs-spolgloski';
 
 const STORAGE_KEY = 'zabawy-ze-zgloskami/sesje';
 const STORAGE_MAINTENANCE_KEY = 'zabawy-ze-zgloskami/ostatnie-czyszczenie';
@@ -18,16 +19,30 @@ export interface IlustracjaZadania {
   opis: string;
 }
 
-export interface ZadanieZgloski {
+interface ZadanieBazowe {
   id: string;
-  kategoria: 'zi/ź' | 'dzi/dź' | 'ci/ć' | 'ni/ń' | 'si/ś';
-  lukowe: string;
+  typ: 'zgloska' | 'litera';
+  kategoria: string;
   poprawna: string;
   alternatywa: string;
   pelne: string;
   komentarz?: string;
+}
+
+export interface ZadanieZgloski extends ZadanieBazowe {
+  typ: 'zgloska';
+  kategoria: 'zi/ź' | 'dzi/dź' | 'ci/ć' | 'ni/ń' | 'si/ś';
+  lukowe: string;
   ilustracja?: IlustracjaZadania;
 }
+
+export interface ZadanieLitera extends ZadanieBazowe {
+  typ: 'litera';
+  kategoria: 'samogloski-vs-spolgloski';
+  litera: string;
+}
+
+export type Zadanie = ZadanieZgloski | ZadanieLitera;
 
 export interface OdpowiedzUzytkownika {
   taskId: string;
@@ -54,17 +69,19 @@ export interface ZapisSesji {
   mistakes: number;
   accuracy: number;
   proby: ZapisProby[];
+  tryb: TrybCwiczenia;
 }
 
 interface SessionState {
   widok: Widok;
-  kolejka: ZadanieZgloski[];
+  kolejka: Zadanie[];
   indeks: number;
   odpowiedzi: OdpowiedzUzytkownika[];
   filtr: FiltrZadan;
   sessionId: string | null;
   startedAt: number | null;
   zapisana: boolean;
+  tryb: TrybCwiczenia;
 }
 
 const initialState: SessionState = {
@@ -75,7 +92,8 @@ const initialState: SessionState = {
   filtr: 'all',
   sessionId: null,
   startedAt: null,
-  zapisana: false
+  zapisana: false,
+  tryb: 'gloski-zmiekczajace'
 };
 
 type Action =
@@ -83,25 +101,35 @@ type Action =
   | {
       type: 'START';
       filtr: FiltrZadan;
-      kolejka: ZadanieZgloski[];
+      kolejka: Zadanie[];
       sessionId: string;
       startedAt: number;
+      tryb: TrybCwiczenia;
     }
   | { type: 'ODPOWIEDZ'; odpowiedz: OdpowiedzUzytkownika }
   | { type: 'NASTEPNE' }
   | { type: 'RESET_WIDOK'; widok: Widok }
   | {
       type: 'RESET_WYNIKI';
-      kolejka: ZadanieZgloski[];
+      kolejka: Zadanie[];
       sessionId: string;
       startedAt: number;
+      tryb: TrybCwiczenia;
     }
   | { type: 'OZNACZ_ZAPISANA' };
 
-function wylosujKolejke(filtr: FiltrZadan): ZadanieZgloski[] {
-  const dostepne = zadaniaZgloski.filter((zadanie) =>
-    filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
-  );
+function isTrybCwiczenia(value: unknown): value is TrybCwiczenia {
+  return value === 'gloski-zmiekczajace' || value === 'samogloski-vs-spolgloski';
+}
+
+function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
+  const dostepne: Zadanie[] =
+    tryb === 'gloski-zmiekczajace'
+      ? zadaniaZgloski.filter((zadanie) =>
+          filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
+        )
+      : zadaniaSamogloskiVsSpolgloski;
+
   const kopia = [...dostepne];
   for (let i = kopia.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -117,9 +145,9 @@ function generateSessionId(): string {
   return `sesja-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
 }
 
-function przygotujSesje(filtr: FiltrZadan) {
+function przygotujSesje(tryb: TrybCwiczenia, filtr: FiltrZadan) {
   return {
-    kolejka: wylosujKolejke(filtr),
+    kolejka: wylosujKolejke(tryb, filtr),
     sessionId: generateSessionId(),
     startedAt: Date.now()
   };
@@ -197,6 +225,8 @@ function sanitizeHistory(value: unknown): ZapisSesji[] {
       const correct = proby.filter((attempt) => attempt.poprawna).length;
       const mistakes = attempts - correct;
       const accuracy = attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
+      const rawTryb = (session as { tryb?: unknown }).tryb;
+      const tryb = isTrybCwiczenia(rawTryb) ? rawTryb : 'gloski-zmiekczajace';
 
       return {
         sessionId: session.sessionId,
@@ -206,7 +236,8 @@ function sanitizeHistory(value: unknown): ZapisSesji[] {
         correct,
         mistakes,
         accuracy,
-        proby
+        proby,
+        tryb
       } satisfies ZapisSesji;
     })
     .filter((item): item is ZapisSesji => Boolean(item));
@@ -234,7 +265,8 @@ function reducer(state: SessionState, action: Action): SessionState {
         filtr: action.filtr,
         sessionId: action.sessionId,
         startedAt: action.startedAt,
-        zapisana: false
+        zapisana: false,
+        tryb: action.tryb
       };
     }
     case 'ODPOWIEDZ': {
@@ -258,7 +290,8 @@ function reducer(state: SessionState, action: Action): SessionState {
       return {
         ...initialState,
         widok: action.widok,
-        filtr: state.filtr
+        filtr: state.filtr,
+        tryb: state.tryb
       };
     case 'RESET_WYNIKI':
       return {
@@ -269,7 +302,8 @@ function reducer(state: SessionState, action: Action): SessionState {
         kolejka: action.kolejka,
         sessionId: action.sessionId,
         startedAt: action.startedAt,
-        zapisana: false
+        zapisana: false,
+        tryb: action.tryb
       };
     case 'OZNACZ_ZAPISANA':
       return {
@@ -282,8 +316,8 @@ function reducer(state: SessionState, action: Action): SessionState {
 }
 
 interface SessionContextValue extends SessionState {
-  aktualneZadanie: ZadanieZgloski | undefined;
-  rozpocznij: () => void;
+  aktualneZadanie: Zadanie | undefined;
+  rozpocznij: (tryb?: TrybCwiczenia) => void;
   udzielOdpowiedzi: (wybor: string) => void;
   nastepneZadanie: () => void;
   powrotDoStartu: () => void;
@@ -410,7 +444,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       correct,
       mistakes,
       accuracy,
-      proby
+      proby,
+      tryb: state.tryb
     };
 
     setHistoriaSesji((poprzednie) => {
@@ -418,16 +453,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       return uporzadkujISkróćHistorie([nowaSesja, ...bezDuplikatu]);
     });
     dispatch({ type: 'OZNACZ_ZAPISANA' });
-  }, [state.widok, state.zapisana, state.sessionId, state.odpowiedzi, state.kolejka, state.startedAt]);
+  }, [state.widok, state.zapisana, state.sessionId, state.odpowiedzi, state.kolejka, state.startedAt, state.tryb]);
 
-  const rozpocznij = () => {
-    const meta = przygotujSesje(state.filtr);
+  const rozpocznij = (tryb?: TrybCwiczenia) => {
+    const docelowyTryb = tryb ?? state.tryb;
+    const meta = przygotujSesje(docelowyTryb, state.filtr);
     dispatch({
       type: 'START',
       filtr: state.filtr,
       kolejka: meta.kolejka,
       sessionId: meta.sessionId,
-      startedAt: meta.startedAt
+      startedAt: meta.startedAt,
+      tryb: docelowyTryb
     });
   };
 
@@ -456,12 +493,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const zresetujWyniki = () => {
-    const meta = przygotujSesje(state.filtr);
+    const meta = przygotujSesje(state.tryb, state.filtr);
     dispatch({
       type: 'RESET_WYNIKI',
       kolejka: meta.kolejka,
       sessionId: meta.sessionId,
-      startedAt: meta.startedAt
+      startedAt: meta.startedAt,
+      tryb: state.tryb
     });
   };
 

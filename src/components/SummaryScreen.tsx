@@ -59,7 +59,7 @@ export default function SummaryScreen() {
         <button className="btn" onClick={powrotDoStartu}>
           Wróć do początku
         </button>
-        <button className="btn btn--primary" onClick={rozpocznij}>
+        <button className="btn btn--primary" onClick={() => rozpocznij()}>
           Powtórz ćwiczenie
         </button>
       </footer>
