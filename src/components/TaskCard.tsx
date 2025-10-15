@@ -1,8 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../context/SessionContext';
+import type { ZadanieLitera, ZadanieZgloski } from '../context/SessionContext';
 
 function cn(...klasy: Array<string | false | undefined>): string {
   return klasy.filter((element): element is string => Boolean(element)).join(' ');
+}
+
+function jestZadaniemLiterowym(zadanie: unknown): zadanie is ZadanieLitera {
+  return Boolean(zadanie && typeof zadanie === 'object' && (zadanie as ZadanieLitera).typ === 'litera');
+}
+
+function jestZadaniemZgloskowym(zadanie: unknown): zadanie is ZadanieZgloski {
+  return Boolean(zadanie && typeof zadanie === 'object' && (zadanie as ZadanieZgloski).typ === 'zgloska');
 }
 
 export default function TaskCard() {
@@ -35,6 +44,9 @@ export default function TaskCard() {
 
   const pokazKomentarz = Boolean(ostatniaOdpowiedz && aktualneZadanie.komentarz);
 
+  const zadanieLitera = jestZadaniemLiterowym(aktualneZadanie) ? aktualneZadanie : undefined;
+  const zadanieZgloski = jestZadaniemZgloskowym(aktualneZadanie) ? aktualneZadanie : undefined;
+
   useEffect(() => {
     if (ostatniaOdpowiedz) {
       setShowModal(true);
@@ -62,34 +74,53 @@ export default function TaskCard() {
     nastepneZadanie();
   };
 
+  const instrukcja = zadanieLitera
+    ? 'Określ, czy ta litera to samogłoska czy spółgłoska'
+    : 'Wybierz poprawną zgłoskę';
+
+  const etykietaRozwiazania = zadanieLitera ? 'Poprawna odpowiedź' : 'Poprawne słowo';
+  const wartoscRozwiazania = zadanieLitera ? zadanieLitera.litera : aktualneZadanie.pelne;
+
   return (
     <article className="task-card" aria-live="polite">
       <header className="task-card__header">
-        <p className="task-card__instruction">Wybierz poprawną zgłoskę</p>
-        <h2 className="task-card__word" aria-label={`Słowo ${aktualneZadanie.pelne}`}>
-          {aktualneZadanie.lukowe.replace(/_/g, '▢')}
-        </h2>
-      </header>
-      <div
-        className="task-card__media"
-        role="img"
-        aria-label={
-          aktualneZadanie.ilustracja
-            ? aktualneZadanie.ilustracja.opis
-            : `Ilustracja do słowa ${aktualneZadanie.pelne}`
-        }
-      >
-        {aktualneZadanie.ilustracja ? (
-          <span className="task-card__emoji" aria-hidden="true">
-            {aktualneZadanie.ilustracja.symbol}
-          </span>
-        ) : (
-          <svg viewBox="0 0 160 160" aria-hidden="true">
-            <rect x="16" y="16" width="128" height="128" rx="24" fill="#dbeafe" />
-            <path d="M48 96 L80 48 L112 96 Z" fill="#1f3c88" />
-          </svg>
+        <p className="task-card__instruction">{instrukcja}</p>
+        {zadanieZgloski && (
+          <h2 className="task-card__word" aria-label={`Słowo ${zadanieZgloski.pelne}`}>
+            {zadanieZgloski.lukowe.replace(/_/g, '▢')}
+          </h2>
         )}
-      </div>
+      </header>
+      {zadanieZgloski ? (
+        <div
+          className="task-card__media"
+          role="img"
+          aria-label={
+            zadanieZgloski.ilustracja
+              ? zadanieZgloski.ilustracja.opis
+              : `Ilustracja do słowa ${zadanieZgloski.pelne}`
+          }
+        >
+          {zadanieZgloski.ilustracja ? (
+            <span className="task-card__emoji" aria-hidden="true">
+              {zadanieZgloski.ilustracja.symbol}
+            </span>
+          ) : (
+            <svg viewBox="0 0 160 160" aria-hidden="true">
+              <rect x="16" y="16" width="128" height="128" rx="24" fill="#dbeafe" />
+              <path d="M48 96 L80 48 L112 96 Z" fill="#1f3c88" />
+            </svg>
+          )}
+        </div>
+      ) : (
+        <div
+          className="task-card__letter"
+          role="img"
+          aria-label={`Litera ${zadanieLitera?.litera ?? aktualneZadanie.pelne}`}
+        >
+          <span aria-hidden="true">{zadanieLitera?.litera ?? aktualneZadanie.pelne}</span>
+        </div>
+      )}
       <div className="task-card__options">
         {opcje.map((opcja) => {
           const zaznaczone = ostatniaOdpowiedz?.wybrana === opcja;
@@ -122,7 +153,7 @@ export default function TaskCard() {
                 : 'Spróbuj zapamiętać prawidłowy zapis.'}
             </p>
             <p className="feedback__solution">
-              Poprawne słowo: <strong>{aktualneZadanie.pelne}</strong>
+              {etykietaRozwiazania}: <strong>{wartoscRozwiazania}</strong>
             </p>
             {pokazKomentarz && <p className="feedback__hint">{aktualneZadanie.komentarz}</p>}
             <button type="button" className="btn btn--primary feedback-modal__action" onClick={zamknijModal}>

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useSession } from '../context/SessionContext';
-import { zadaniaZgloski } from '../data/tasks';
+import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
 import SessionHistoryPanel from './SessionHistoryPanel';
 
 function formatDate(timestamp: number): string {
@@ -24,7 +24,16 @@ export default function StartScreen() {
     [filtr]
   );
 
-  const ostatniaSesja = historiaSesji[0];
+  const liczbaLiter = zadaniaSamogloskiVsSpolgloski.length;
+
+  const ostatniaSesjaZgloski = useMemo(
+    () => historiaSesji.find((sesja) => sesja.tryb === 'gloski-zmiekczajace'),
+    [historiaSesji]
+  );
+  const ostatniaSesjaLitery = useMemo(
+    () => historiaSesji.find((sesja) => sesja.tryb === 'samogloski-vs-spolgloski'),
+    [historiaSesji]
+  );
 
   return (
     <section className="panel start-panel">
@@ -48,10 +57,10 @@ export default function StartScreen() {
               <p className="module-card__description">
                 Utrwal pisownię trudnych zgłosek wybierając poprawną odpowiedź w krótkich rundach.
               </p>
-              {ostatniaSesja && (
+              {ostatniaSesjaZgloski && (
                 <p className="module-card__last">
-                  Ostatnia sesja: {formatDate(ostatniaSesja.finishedAt)} •{' '}
-                  {ostatniaSesja.correct}/{ostatniaSesja.attempts} poprawnych ({ostatniaSesja.accuracy}% skuteczności)
+                  Ostatnia sesja: {formatDate(ostatniaSesjaZgloski.finishedAt)} •{' '}
+                  {ostatniaSesjaZgloski.correct}/{ostatniaSesjaZgloski.attempts} poprawnych ({ostatniaSesjaZgloski.accuracy}% skuteczności)
                 </p>
               )}
             </header>
@@ -78,21 +87,39 @@ export default function StartScreen() {
                 <span>Tylko słowa z ilustracjami</span>
               </label>
             </fieldset>
-            <button className="btn btn--primary module-card__cta" onClick={rozpocznij}>
+            <button
+              className="btn btn--primary module-card__cta"
+              onClick={() => rozpocznij('gloski-zmiekczajace')}
+            >
               Rozpocznij ćwiczenie
             </button>
           </article>
-          <article className="module-card module-card--coming">
+          <article className="module-card module-card--primary">
             <header className="module-card__header">
               <div className="module-card__meta">
-                <span className="module-card__category">W przygotowaniu</span>
+                <span className="module-card__category">Ćwiczenie dostępne</span>
+                <span className="module-card__stats">{liczbaLiter} litery</span>
               </div>
               <h2 className="module-card__title">Samogłoski vs Spółgłoski</h2>
               <p className="module-card__description">
                 Szybko klasyfikuj litery do odpowiedniej grupy i ćwicz refleks podczas krótkich sesji.
               </p>
+              <p className="module-card__description">
+                Litery pojawiają się w wersji małej i wielkiej, w tym z polskimi znakami (ą, ę, ź...).
+              </p>
+              {ostatniaSesjaLitery && (
+                <p className="module-card__last">
+                  Ostatnia sesja: {formatDate(ostatniaSesjaLitery.finishedAt)} •{' '}
+                  {ostatniaSesjaLitery.correct}/{ostatniaSesjaLitery.attempts} poprawnych ({ostatniaSesjaLitery.accuracy}% skuteczności)
+                </p>
+              )}
             </header>
-            <div className="module-card__placeholder">Wkrótce dostępne</div>
+            <button
+              className="btn btn--primary module-card__cta"
+              onClick={() => rozpocznij('samogloski-vs-spolgloski')}
+            >
+              Rozpocznij klasyfikację liter
+            </button>
           </article>
           <article className="module-card module-card--coming">
             <header className="module-card__header">
