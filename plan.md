@@ -152,6 +152,25 @@ export interface ZadanieZgloski {
 - System statystyk odnotowuje wynik w ten sam sposób, aktualizując liczniki i procent skuteczności bez dodatkowej konfiguracji.
 - Jednostkowe testy (lub manualna lista kontrolna) potwierdzają, że wszystkie samogłoski (`a, e, i, o, u, y, ą, ę`) są identyfikowane jako poprawne odpowiedzi dla kafelka „Samogłoska”.
 - Litery niebędące samogłoskami w powyższej puli są oceniane jako „Spółgłoska”, zachowując parytet z istniejącym frameworkiem ćwiczeń.
+### Trwałość danych i historia sesji
+- **Mechanizm zapisu:** wyniki każdej próby (identyfikator zadania, poprawność, czas odpowiedzi, znaczniki czasowe rozpoczęcia/zakończenia sesji) są zapisywane w `localStorage` pod kluczem `zabawy-ze-zgloskami/sesje`. Dane przechowywane są w formacie JSON jako lista sesji, z której każda zawiera:
+  - metadane sesji (`sessionId`, `startedAt`, `finishedAt`),
+  - zagregowane statystyki (`attempts`, `correct`, `mistakes`, `accuracy`),
+  - tablicę prób z informacjami o każdym ćwiczeniu (`taskId`, wybrana zgłoska, poprawność, znacznik czasu odpowiedzi).
+- **Aktualizacja zapisu:** po zakończeniu ćwiczenia dane sesji są scalane z istniejącą listą, a jeżeli w `localStorage` znajduje się starsza wersja struktur, aplikacja wykonuje migrację (np. dodanie brakujących pól z wartościami domyślnymi).
+- **Fallback:** w przypadku braku wsparcia dla `localStorage` aplikacja działa w trybie sesyjnym (tylko pamięć w RAM) i komunikuje użytkownikowi brak trwałego zapisu.
+
+### Raport sesji w menu głównym
+- Ekran startowy prezentuje zwijany panel „Raport sesji” z nagłówkiem oraz ikoną strzałki sygnalizującą możliwość rozwinęcia.
+- Po rozwinięciu panelu wyświetlane są maksymalnie trzy ostatnie sesje z `localStorage`: data i godzina zakończenia, liczba poprawnych odpowiedzi, skuteczność, liczba zadań.
+- Każdy wiersz posiada przycisk „Szczegóły”, który otwiera modal lub boczny panel z pełną listą prób (słowo, wybrana zgłoska, status ✅/❌, czas odpowiedzi).
+- Jeśli brak zapisanych sesji, panel pokazuje informację „Brak zapisanych wyników — rozpocznij pierwsze ćwiczenie!” oraz instrukcję, że wyniki zapisują się automatycznie po zakończeniu.
+
+### Retencja i reset danych
+- Domyślnie przechowywane są maksymalnie 20 ostatnich sesji; dodanie nowej sesji usuwa najstarszy rekord, aby zapobiegać nadmiernemu zużyciu pamięci.
+- W menu ustawień oraz na ekranie podsumowania pozostaje dostępny przycisk „Usuń historię”, który usuwa klucz `zabawy-ze-zgloskami/sesje` z `localStorage` po potwierdzeniu użytkownika.
+- Po restarcie ćwiczenia (przycisk „Powtórz ćwiczenie”) zaczyna się nowa sesja, lecz poprzednia pozostaje w historii do momentu ręcznego usunięcia.
+- Dodatkowo aplikacja raz na 30 dni sprawdza znaczniki czasu w historii i automatycznie usuwa sesje starsze niż 90 dni, co minimalizuje ryzyko przechowywania nieaktualnych danych.
 
 ## Kolejne kroki rozwoju
 1. Przygotowanie prototypu UI (Figma / szkice papierowe).
@@ -161,3 +180,38 @@ export interface ZadanieZgloski {
 5. Dodanie efektów wizualnych i animacji wzmacniających informacje zwrotne.
 6. Konfiguracja PWA (manifest, service worker) oraz testy na urządzeniach mobilnych.
 7. Weryfikacja językowa słówek przez nauczyciela / rodzica, rozszerzanie bazy danych.
+
+
+## Roadmapa na najbliższe sprinty
+
+### Przeprojektowanie menu
+- Zaprojektowanie prostego menu startowego z wyraźnymi przyciskami prowadzącymi do trybów ćwiczeń i panelu statystyk.
+- Wprowadzenie sekcji "Szybki start" prezentującej ostatnio uruchamiany tryb wraz z liczbą wykonanych zadań.
+- Dodanie skrótu do ustawień dostępności (kontrast, dźwięk) z poziomu menu.
+- Przygotowanie responsywnego układu działającego na urządzeniach dotykowych.
+
+### Nowe typy ćwiczeń
+- Rozszerzenie bazy o zadania typu "przeciągnij i upuść" dla ułożenia poprawnej zgłoski.
+- Dodanie wariantu "dokończ zdanie", w którym użytkownik wybiera zgłoskę dopasowaną do kontekstu zdania.
+- Przygotowanie generatora szybkich powtórek (3–5 losowych słów) do wykorzystania w krótkich sesjach.
+- Ujednolicenie komunikatów informacji zwrotnej dla nowych i istniejących ćwiczeń.
+
+## Aktywność „Odczytywanie czasu”
+- Zakres godzin obejmuje wyłącznie wartości od 1 do 12, aby dopasować się do tradycyjnej tarczy zegara.
+- Minuty ograniczone są do kwartalnych interwałów: `00`, `15`, `30` oraz `45`, dzięki czemu ćwiczenie skupia się na najczęściej używanych formach.
+- Każda runda generuje jedno poprawne rozwiązanie oraz trzy dystraktory, które są tasowane przed prezentacją.
+- Dystraktory powinny zachowywać poprawny format czasu (np. `7:15`), ale różnić się godziną lub minutami od właściwej odpowiedzi.
+- Interfejs przewiduje możliwość przełączania między tarczą analogową a cyfrowym wyświetlaczem, aby wspierać różne style nauki.
+- Widoki muszą pozostawać responsywne – na urządzeniach mobilnych elementy zegara i przyciski odpowiedzi powinny skalować się oraz zachowywać wygodne marginesy dotykowe.
+- Wersja analogowa powinna uwzględniać wyraźne wskazówki godzinową i minutową, a cyfrowa – czytelne typograficzne przedstawienie czasu.
+
+### Utrwalenie danych i raportowanie
+- Zapisywanie postępów w `localStorage`, aby zachować wyniki pomiędzy sesjami.
+- Udostępnienie widoku historii sesji z możliwością filtrowania po dacie i typie ćwiczeń.
+- Eksport raportu do pliku PDF/obrazka podsumowującego skuteczność oraz ostatnie błędy.
+- Dodanie opcji ręcznego resetu postępów wraz z potwierdzeniem działania.
+
+### Integracyjne zadania wspólne
+- Przygotowanie testów interfejsu pokrywających nowe przepływy menu oraz ćwiczeń.
+- Aktualizacja dokumentacji użytkownika wraz ze zrzutami ekranu nowych ekranów.
+- Weryfikacja tłumaczeń i etykiet, aby zachować spójność językową po wprowadzeniu zmian.
