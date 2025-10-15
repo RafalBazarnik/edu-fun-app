@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useSession } from '../context/SessionContext';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
+import { zadaniaOdczytywanieCzasu } from '../data/clock';
 import SessionHistoryPanel from './SessionHistoryPanel';
 
 function formatDate(timestamp: number): string {
@@ -25,6 +26,7 @@ export default function StartScreen() {
   );
 
   const liczbaLiter = zadaniaSamogloskiVsSpolgloski.length;
+  const liczbaZegarow = zadaniaOdczytywanieCzasu.length;
 
   const ostatniaSesjaZgloski = useMemo(
     () => historiaSesji.find((sesja) => sesja.tryb === 'gloski-zmiekczajace'),
@@ -32,6 +34,10 @@ export default function StartScreen() {
   );
   const ostatniaSesjaLitery = useMemo(
     () => historiaSesji.find((sesja) => sesja.tryb === 'samogloski-vs-spolgloski'),
+    [historiaSesji]
+  );
+  const ostatniaSesjaZegar = useMemo(
+    () => historiaSesji.find((sesja) => sesja.tryb === 'odczytywanie-czasu'),
     [historiaSesji]
   );
 
@@ -119,17 +125,32 @@ export default function StartScreen() {
               Rozpocznij klasyfikację liter
             </button>
           </article>
-          <article className="module-card module-card--coming">
+          <article className="module-card module-card--primary">
             <header className="module-card__header">
               <div className="module-card__meta">
-                <span className="module-card__category">W przygotowaniu</span>
+                <span className="module-card__category">Ćwiczenie dostępne</span>
+                <span className="module-card__stats">{liczbaZegarow} kombinacji</span>
               </div>
               <h2 className="module-card__title">Odczytywanie czasu</h2>
               <p className="module-card__description">
-                Nauka godzin w formie quizu z tarczą analogową i wyświetlaczem cyfrowym.
+                Ćwicz odczytywanie godzin na tarczy analogowej i w zapisie cyfrowym z czterema odpowiedziami do wyboru.
               </p>
+              <p className="module-card__description">
+                Zakres obejmuje godziny od 1 do 12 w kwartalnych interwałach minutowych.
+              </p>
+              {ostatniaSesjaZegar && (
+                <p className="module-card__last">
+                  Ostatnia sesja: {formatDate(ostatniaSesjaZegar.finishedAt)} •{' '}
+                  {ostatniaSesjaZegar.correct}/{ostatniaSesjaZegar.attempts} poprawnych ({ostatniaSesjaZegar.accuracy}% skuteczności)
+                </p>
+              )}
             </header>
-            <div className="module-card__placeholder">Wkrótce dostępne</div>
+            <button
+              className="btn btn--primary module-card__cta"
+              onClick={() => rozpocznij('odczytywanie-czasu')}
+            >
+              Rozpocznij trening zegara
+            </button>
           </article>
         </div>
         <SessionHistoryPanel />

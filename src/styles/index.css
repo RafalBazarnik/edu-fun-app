@@ -522,6 +522,132 @@ a {
   padding: 1rem;
 }
 
+.task-card__clock {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.task-card__clock-toggle {
+  display: inline-flex;
+  gap: 0.75rem;
+  background: rgba(226, 232, 240, 0.5);
+  padding: 0.35rem;
+  border-radius: 999px;
+}
+
+.clock-toggle {
+  border: none;
+  background: transparent;
+  color: #1f3c88;
+  font-weight: 600;
+  padding: 0.45rem 0.9rem;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.clock-toggle:focus-visible {
+  outline: 3px solid #fcd34d;
+  outline-offset: 2px;
+}
+
+.clock-toggle--active {
+  background: linear-gradient(135deg, #1f3c88, #3f72af);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(31, 60, 136, 0.25);
+}
+
+.clock {
+  width: min(16rem, 70vw);
+  border-radius: 24px;
+  background: linear-gradient(135deg, #ffffff, #eff6ff);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.12);
+}
+
+.clock--analog {
+  padding-bottom: 1.75rem;
+}
+
+.clock__face {
+  --clock-size: min(12rem, 60vw);
+  --clock-radius: calc(var(--clock-size) / 2);
+  position: relative;
+  width: var(--clock-size);
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at top, #ffffff 0%, #e0f2fe 80%);
+  box-shadow: inset 0 0 30px rgba(15, 23, 42, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock__mark {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 12px;
+  background: #1f3c88;
+  transform-origin: center var(--clock-radius);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.clock__hand {
+  position: absolute;
+  bottom: 50%;
+  left: 50%;
+  transform-origin: bottom center;
+  border-radius: 999px;
+  background: #1f3c88;
+  box-shadow: 0 4px 12px rgba(31, 60, 136, 0.2);
+  pointer-events: none;
+}
+
+.clock__hand--hour {
+  width: 6px;
+  height: 32%;
+}
+
+.clock__hand--minute {
+  width: 4px;
+  height: 44%;
+}
+
+.clock__center {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #1f3c88;
+  box-shadow: 0 0 0 6px rgba(63, 114, 175, 0.15);
+}
+
+.clock__caption {
+  font-weight: 700;
+  color: #1f3c88;
+  letter-spacing: 0.12em;
+}
+
+.clock--digital {
+  font-size: clamp(2.5rem, 12vw, 4rem);
+  font-weight: 700;
+  color: #1f3c88;
+  letter-spacing: 0.08em;
+}
+
+.clock__digital-value {
+  font-variant-numeric: tabular-nums;
+}
+
 .task-card__letter span {
   display: block;
   width: 100%;
