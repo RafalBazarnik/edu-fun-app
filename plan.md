@@ -133,3 +133,12 @@ export interface ZadanieZgloski {
 5. Dodanie efektów wizualnych i animacji wzmacniających informacje zwrotne.
 6. Konfiguracja PWA (manifest, service worker) oraz testy na urządzeniach mobilnych.
 7. Weryfikacja językowa słówek przez nauczyciela / rodzica, rozszerzanie bazy danych.
+
+## Aktywność „Odczytywanie czasu”
+- Zakres godzin obejmuje wyłącznie wartości od 1 do 12, aby dopasować się do tradycyjnej tarczy zegara.
+- Minuty ograniczone są do kwartalnych interwałów: `00`, `15`, `30` oraz `45`, dzięki czemu ćwiczenie skupia się na najczęściej używanych formach.
+- Każda runda generuje jedno poprawne rozwiązanie oraz trzy dystraktory, które są tasowane przed prezentacją.
+- Dystraktory powinny zachowywać poprawny format czasu (np. `7:15`), ale różnić się godziną lub minutami od właściwej odpowiedzi.
+- Interfejs przewiduje możliwość przełączania między tarczą analogową a cyfrowym wyświetlaczem, aby wspierać różne style nauki.
+- Widoki muszą pozostawać responsywne – na urządzeniach mobilnych elementy zegara i przyciski odpowiedzi powinny skalować się oraz zachowywać wygodne marginesy dotykowe.
+- Wersja analogowa powinna uwzględniać wyraźne wskazówki godzinową i minutową, a cyfrowa – czytelne typograficzne przedstawienie czasu.
