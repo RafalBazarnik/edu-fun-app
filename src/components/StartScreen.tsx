@@ -40,7 +40,7 @@ export default function StartScreen() {
       <header className="panel__header">
         <h1 className="tytul">Trener edukcaji domowej</h1>
         <p className="lead">
-          Nauczy dziecko co szkoła powinna nauczyć!!!
+          Nauczy Twoje dziecko czego szkoła nie zdołała!!!
         </p>
       </header>
       <div className="panel__content">
