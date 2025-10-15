@@ -12,8 +12,10 @@
 ## Zakres funkcjonalny
 1. **Ekran powitalny**
    - Nazwa aplikacji i krótki opis zasad.
-   - Przycisk „Rozpocznij ćwiczenie”.
-   - Informacja o liczbie zadań dostępnych w puli.
+   - Menu startowe w formie listy/kafelków prezentującej moduły ćwiczeń; pierwszy element to „Głoski zmiękczające” z krótką zajawką (np. liczba słówek, przewidywany czas).
+   - Każda pozycja menu posiada wyróżniony przycisk CTA („Rozpocznij”) oraz miejsce na przyszłe moduły, aby można było łatwo dodawać kolejne ćwiczenia.
+   - Na desktopie menu układa się w 2–3 kolumny z czytelnymi kafelkami; na urządzeniach mobilnych przechodzi w pojedynczą kolumnę z dużymi polami dotykowymi i poziomym przewijaniem, gdy pojawi się więcej niż trzy moduły.
+   - Informacja o liczbie zadań dostępnych w puli oraz skrót statystyk z ostatniej sesji, jeśli istnieją.
 2. **Panel ćwiczenia**
    - Wyświetlanie słowa z luką w miejscu zgłoski zmiękczającej.
    - Ilustracja (lokalny plik PNG/SVG) lub neutralna ikona, jeśli ilustracja niedostępna.
@@ -24,6 +26,7 @@
 3. **Statystyki w czasie rzeczywistym**
    - Liczba rozwiązanych zadań, liczba poprawnych odpowiedzi, liczba błędów, procent skuteczności.
    - Pasek postępu obrazujący stosunek zadań wykonanych do całej puli.
+   - Przełączany panel „Raport sesji” wysuwany z boku/dolnej krawędzi, prezentujący zagregowane statystyki z ostatnich zapisanych sesji (wyniki, średnia skuteczność, najtrudniejsze słowa) na podstawie danych utrwalonych w pamięci lokalnej.
 4. **Ekran podsumowania sesji**
    - Zestawienie punktów (poprawnych odpowiedzi), błędów i skuteczności.
    - Lista słów wraz z ikonami ✅/❌ informującymi o poprawności odpowiedzi.
