@@ -3,6 +3,8 @@ interface ClockDisplayProps {
   minuty: number;
   wariant: 'analogowy' | 'cyfrowy';
   opis: string;
+  rozmiar?: 'standard' | 'compact';
+  pokazPodpis?: boolean;
 }
 
 function formatuj(godzina: number, minuty: number): string {
@@ -19,7 +21,14 @@ function stopnieWskazowkiMinutowej(minuty: number): number {
   return (minuty % 60) * 6;
 }
 
-export default function ClockDisplay({ godzina, minuty, wariant, opis }: ClockDisplayProps) {
+export default function ClockDisplay({
+  godzina,
+  minuty,
+  wariant,
+  opis,
+  rozmiar = 'standard',
+  pokazPodpis = true
+}: ClockDisplayProps) {
   const formatted = formatuj(godzina, minuty);
 
   if (wariant === 'cyfrowy') {
@@ -36,7 +45,11 @@ export default function ClockDisplay({ godzina, minuty, wariant, opis }: ClockDi
   const minuteRotation = stopnieWskazowkiMinutowej(minuty);
 
   return (
-    <div className="clock clock--analog" role="img" aria-label={opis}>
+    <div
+      className={`clock clock--analog${rozmiar === 'compact' ? ' clock--compact' : ''}`}
+      role="img"
+      aria-label={opis}
+    >
       <div className="clock__face">
         <div className="clock__center" />
         {[...Array(12)].map((_, index) => (
@@ -58,7 +71,7 @@ export default function ClockDisplay({ godzina, minuty, wariant, opis }: ClockDi
           aria-hidden="true"
         />
       </div>
-      <span className="clock__caption">{formatted}</span>
+      {pokazPodpis && <span className="clock__caption">{formatted}</span>}
     </div>
   );
 }

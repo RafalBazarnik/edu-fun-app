@@ -28,7 +28,6 @@ export default function SessionHistoryPanel() {
   const [expanded, setExpanded] = useState(false);
   const [aktywnyId, setAktywnyId] = useState<string | null>(null);
 
-  const ostatnieSesje = useMemo(() => historiaSesji.slice(0, 3), [historiaSesji]);
   const wybranaSesja = useMemo(
     () => historiaSesji.find((sesja) => sesja.sessionId === aktywnyId),
     [aktywnyId, historiaSesji]
@@ -67,7 +66,7 @@ export default function SessionHistoryPanel() {
           ) : (
             <>
               <ul className="history__list">
-                {ostatnieSesje.map((sesja) => (
+                {historiaSesji.map((sesja) => (
                   <li key={sesja.sessionId} className="history__item">
                     <div className="history__row">
                       <span className="history__date">{formatDate(sesja.finishedAt)}</span>

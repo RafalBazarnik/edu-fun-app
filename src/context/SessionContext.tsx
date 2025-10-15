@@ -267,6 +267,51 @@ function uporzadkujISkróćHistorie(historia: ZapisSesji[], teraz: number = Date
   return wZakresie.slice(0, MAX_HISTORY_ENTRIES);
 }
 
+function utworzZapisSesjiZeStanu(
+  state: SessionState,
+  finishedAt: number = Date.now()
+): ZapisSesji | null {
+  if (!state.sessionId) {
+    return null;
+  }
+
+  const proby: ZapisProby[] = state.odpowiedzi
+    .map((odpowiedz) => {
+      const zadanie = state.kolejka.find((element) => element.id === odpowiedz.taskId);
+      return {
+        taskId: odpowiedz.taskId,
+        wybrana: odpowiedz.wybrana,
+        poprawna: odpowiedz.poprawna,
+        poprawnaOdpowiedz: zadanie?.poprawna ?? '',
+        pelne: zadanie?.pelne ?? odpowiedz.taskId,
+        odpowiedzAt: odpowiedz.czas
+      } satisfies ZapisProby;
+    })
+    .sort((a, b) => a.odpowiedzAt - b.odpowiedzAt);
+
+  const attempts = proby.length;
+  const correct = proby.filter((attempt) => attempt.poprawna).length;
+  const mistakes = attempts - correct;
+  const accuracy = attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
+
+  return {
+    sessionId: state.sessionId,
+    startedAt: state.startedAt ?? finishedAt,
+    finishedAt,
+    attempts,
+    correct,
+    mistakes,
+    accuracy,
+    proby,
+    tryb: state.tryb
+  } satisfies ZapisSesji;
+}
+
+function dodajSesjeDoListy(historia: ZapisSesji[], sesja: ZapisSesji): ZapisSesji[] {
+  const bezDuplikatu = historia.filter((entry) => entry.sessionId !== sesja.sessionId);
+  return uporzadkujISkróćHistorie([sesja, ...bezDuplikatu]);
+}
+
 function reducer(state: SessionState, action: Action): SessionState {
   switch (action.type) {
     case 'USTAW_FILTR':
@@ -425,53 +470,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   }, [historiaSesji, localStorageDostepne]);
 
   useEffect(() => {
-    if (state.widok !== 'summary' || state.zapisana || !state.sessionId) {
+    if (state.widok !== 'summary' || state.zapisana) {
       return;
     }
 
-    const zakonczonoOStatniejProb = state.odpowiedzi.length > 0;
-    if (!zakonczonoOStatniejProb) {
+    const nowaSesja = utworzZapisSesjiZeStanu(state);
+    if (!nowaSesja) {
       return;
     }
 
-    const finishedAt = Date.now();
-    const proby: ZapisProby[] = state.odpowiedzi
-      .map((odpowiedz) => {
-        const zadanie = state.kolejka.find((element) => element.id === odpowiedz.taskId);
-        return {
-          taskId: odpowiedz.taskId,
-          wybrana: odpowiedz.wybrana,
-          poprawna: odpowiedz.poprawna,
-          poprawnaOdpowiedz: zadanie?.poprawna ?? '',
-          pelne: zadanie?.pelne ?? odpowiedz.taskId,
-          odpowiedzAt: odpowiedz.czas
-        } satisfies ZapisProby;
-      })
-      .sort((a, b) => a.odpowiedzAt - b.odpowiedzAt);
-
-    const attempts = proby.length;
-    const correct = proby.filter((attempt) => attempt.poprawna).length;
-    const mistakes = attempts - correct;
-    const accuracy = attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
-
-    const nowaSesja: ZapisSesji = {
-      sessionId: state.sessionId,
-      startedAt: state.startedAt ?? finishedAt,
-      finishedAt,
-      attempts,
-      correct,
-      mistakes,
-      accuracy,
-      proby,
-      tryb: state.tryb
-    };
-
-    setHistoriaSesji((poprzednie) => {
-      const bezDuplikatu = poprzednie.filter((sesja) => sesja.sessionId !== nowaSesja.sessionId);
-      return uporzadkujISkróćHistorie([nowaSesja, ...bezDuplikatu]);
-    });
+    setHistoriaSesji((poprzednie) => dodajSesjeDoListy(poprzednie, nowaSesja));
     dispatch({ type: 'OZNACZ_ZAPISANA' });
-  }, [state.widok, state.zapisana, state.sessionId, state.odpowiedzi, state.kolejka, state.startedAt, state.tryb]);
+  }, [state]);
 
   const rozpocznij = (tryb?: TrybCwiczenia) => {
     const docelowyTryb = tryb ?? state.tryb;
@@ -507,6 +517,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const powrotDoStartu = () => {
+    if (!state.zapisana) {
+      const zapisanaSesja = utworzZapisSesjiZeStanu(state);
+      if (zapisanaSesja) {
+        setHistoriaSesji((poprzednie) => dodajSesjeDoListy(poprzednie, zapisanaSesja));
+      }
+    }
+
     dispatch({ type: 'RESET_WIDOK', widok: 'welcome' });
   };
 

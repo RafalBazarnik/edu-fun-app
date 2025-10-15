@@ -19,6 +19,23 @@ function jestZadaniemZegara(zadanie: unknown): zadanie is ZadanieZegar {
   return Boolean(zadanie && typeof zadanie === 'object' && (zadanie as ZadanieZegar).typ === 'zegar');
 }
 
+function parsujGodzine(opcja: string): { godzina: number; minuty: number } | null {
+  const dopasowanie = opcja.match(/^(\d{1,2}):(\d{2})$/);
+  if (!dopasowanie) {
+    return null;
+  }
+
+  const [, godzinaTekst, minutyTekst] = dopasowanie;
+  const godzina = Number.parseInt(godzinaTekst, 10);
+  const minuty = Number.parseInt(minutyTekst, 10);
+
+  if (!Number.isFinite(godzina) || !Number.isFinite(minuty)) {
+    return null;
+  }
+
+  return { godzina, minuty };
+}
+
 export default function TaskCard() {
   const { aktualneZadanie, udzielOdpowiedzi, odpowiedzi, nastepneZadanie } = useSession();
   const [showModal, setShowModal] = useState(false);
@@ -178,6 +195,8 @@ export default function TaskCard() {
           const zaznaczone = ostatniaOdpowiedz?.wybrana === opcja;
           const poprawne = ostatniaOdpowiedz?.poprawna && zaznaczone;
           const bledne = ostatniaOdpowiedz && zaznaczone && !ostatniaOdpowiedz.poprawna;
+          const pokazujZegary = Boolean(zadanieZegar && wariantZegara === 'cyfrowy');
+          const daneZegara = pokazujZegary ? parsujGodzine(opcja) : null;
           return (
             <button
               key={opcja}
@@ -191,7 +210,23 @@ export default function TaskCard() {
               onClick={() => udzielOdpowiedzi(opcja)}
               disabled={Boolean(ostatniaOdpowiedz)}
             >
-              {opcja}
+              {pokazujZegary && daneZegara ? (
+                <>
+                  <span className="choice__clock" aria-hidden="true">
+                    <ClockDisplay
+                      godzina={daneZegara.godzina}
+                      minuty={daneZegara.minuty}
+                      wariant="analogowy"
+                      opis={`Zegar pokazuje godzinę ${opcja}`}
+                      rozmiar="compact"
+                      pokazPodpis={false}
+                    />
+                  </span>
+                  <span className="visually-hidden">Godzina {opcja}</span>
+                </>
+              ) : (
+                opcja
+              )}
             </button>
           );
         })}
