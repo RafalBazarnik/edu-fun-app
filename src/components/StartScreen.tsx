@@ -38,7 +38,7 @@ export default function StartScreen() {
   return (
     <section className="panel start-panel">
       <header className="panel__header">
-        <h1 className="tytul">Trener edukcaji domowej</h1>
+        <h1 className="tytul">Trener edukacji domowej</h1>
         <p className="lead">
           Nauczy Twoje dziecko czego szkoła nie zdołała!!!
         </p>
