@@ -15,7 +15,8 @@ function formatDate(timestamp: number): string {
 
 const NAZWY_TRYBOW: Record<TrybCwiczenia, string> = {
   'gloski-zmiekczajace': 'Głoski zmiękczające',
-  'samogloski-vs-spolgloski': 'Samogłoski vs Spółgłoski'
+  'samogloski-vs-spolgloski': 'Samogłoski vs Spółgłoski',
+  'odczytywanie-czasu': 'Odczytywanie czasu'
 };
 
 function nazwijTryb(tryb: TrybCwiczenia): string {

@@ -1,10 +1,14 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import type { ReactNode } from 'react';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
+import { zadaniaOdczytywanieCzasu } from '../data/clock';
 
 export type Widok = 'welcome' | 'exercise' | 'summary';
 export type FiltrZadan = 'all' | 'withIllustrations';
-export type TrybCwiczenia = 'gloski-zmiekczajace' | 'samogloski-vs-spolgloski';
+export type TrybCwiczenia =
+  | 'gloski-zmiekczajace'
+  | 'samogloski-vs-spolgloski'
+  | 'odczytywanie-czasu';
 
 const STORAGE_KEY = 'zabawy-ze-zgloskami/sesje';
 const STORAGE_MAINTENANCE_KEY = 'zabawy-ze-zgloskami/ostatnie-czyszczenie';
@@ -21,7 +25,7 @@ export interface IlustracjaZadania {
 
 interface ZadanieBazowe {
   id: string;
-  typ: 'zgloska' | 'litera';
+  typ: 'zgloska' | 'litera' | 'zegar';
   kategoria: string;
   poprawna: string;
   alternatywa: string;
@@ -42,7 +46,15 @@ export interface ZadanieLitera extends ZadanieBazowe {
   litera: string;
 }
 
-export type Zadanie = ZadanieZgloski | ZadanieLitera;
+export interface ZadanieZegar extends ZadanieBazowe {
+  typ: 'zegar';
+  kategoria: 'odczytywanie-czasu';
+  godzina: number;
+  minuty: number;
+  opcje: string[];
+}
+
+export type Zadanie = ZadanieZgloski | ZadanieLitera | ZadanieZegar;
 
 export interface OdpowiedzUzytkownika {
   taskId: string;
@@ -119,7 +131,11 @@ type Action =
   | { type: 'OZNACZ_ZAPISANA' };
 
 function isTrybCwiczenia(value: unknown): value is TrybCwiczenia {
-  return value === 'gloski-zmiekczajace' || value === 'samogloski-vs-spolgloski';
+  return (
+    value === 'gloski-zmiekczajace' ||
+    value === 'samogloski-vs-spolgloski' ||
+    value === 'odczytywanie-czasu'
+  );
 }
 
 function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
@@ -128,7 +144,9 @@ function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
       ? zadaniaZgloski.filter((zadanie) =>
           filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
         )
-      : zadaniaSamogloskiVsSpolgloski;
+      : tryb === 'samogloski-vs-spolgloski'
+        ? zadaniaSamogloskiVsSpolgloski
+        : zadaniaOdczytywanieCzasu;
 
   const kopia = [...dostepne];
   for (let i = kopia.length - 1; i > 0; i -= 1) {

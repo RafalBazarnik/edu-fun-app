@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useSession } from '../context/SessionContext';
-import type { ZadanieLitera, ZadanieZgloski } from '../context/SessionContext';
+import type { ZadanieLitera, ZadanieZegar, ZadanieZgloski } from '../context/SessionContext';
+import ClockDisplay from './clock/ClockDisplay';
 
 function cn(...klasy: Array<string | false | undefined>): string {
   return klasy.filter((element): element is string => Boolean(element)).join(' ');
@@ -14,9 +15,14 @@ function jestZadaniemZgloskowym(zadanie: unknown): zadanie is ZadanieZgloski {
   return Boolean(zadanie && typeof zadanie === 'object' && (zadanie as ZadanieZgloski).typ === 'zgloska');
 }
 
+function jestZadaniemZegara(zadanie: unknown): zadanie is ZadanieZegar {
+  return Boolean(zadanie && typeof zadanie === 'object' && (zadanie as ZadanieZegar).typ === 'zegar');
+}
+
 export default function TaskCard() {
   const { aktualneZadanie, udzielOdpowiedzi, odpowiedzi, nastepneZadanie } = useSession();
   const [showModal, setShowModal] = useState(false);
+  const [wariantZegara, setWariantZegara] = useState<'analogowy' | 'cyfrowy'>('analogowy');
 
   const ostatniaOdpowiedz = useMemo(() => {
     if (!aktualneZadanie) {
@@ -33,19 +39,28 @@ export default function TaskCard() {
     );
   }
 
+  const zadanieZegar = jestZadaniemZegara(aktualneZadanie) ? aktualneZadanie : undefined;
+  const zadanieLitera = jestZadaniemLiterowym(aktualneZadanie) ? aktualneZadanie : undefined;
+  const zadanieZgloski = jestZadaniemZgloskowym(aktualneZadanie) ? aktualneZadanie : undefined;
+
+  useEffect(() => {
+    setWariantZegara('analogowy');
+  }, [aktualneZadanie?.id]);
+
   const opcje = useMemo(() => {
-    const shuffled = [aktualneZadanie.poprawna, aktualneZadanie.alternatywa];
+    const zrodlo = zadanieZegar
+      ? zadanieZegar.opcje
+      : [aktualneZadanie.poprawna, aktualneZadanie.alternatywa];
+    const unikalne = Array.from(new Set(zrodlo));
+    const shuffled = [...unikalne];
     for (let i = shuffled.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
-  }, [aktualneZadanie]);
+  }, [aktualneZadanie, zadanieZegar]);
 
   const pokazKomentarz = Boolean(ostatniaOdpowiedz && aktualneZadanie.komentarz);
-
-  const zadanieLitera = jestZadaniemLiterowym(aktualneZadanie) ? aktualneZadanie : undefined;
-  const zadanieZgloski = jestZadaniemZgloskowym(aktualneZadanie) ? aktualneZadanie : undefined;
 
   useEffect(() => {
     if (ostatniaOdpowiedz) {
@@ -74,12 +89,22 @@ export default function TaskCard() {
     nastepneZadanie();
   };
 
-  const instrukcja = zadanieLitera
-    ? 'Określ, czy ta litera to samogłoska czy spółgłoska'
-    : 'Wybierz poprawną zgłoskę';
+  const instrukcja = zadanieZegar
+    ? 'Odczytaj godzinę z zegara'
+    : zadanieLitera
+      ? 'Określ, czy ta litera to samogłoska czy spółgłoska'
+      : 'Wybierz poprawną zgłoskę';
 
-  const etykietaRozwiazania = zadanieLitera ? 'Poprawna odpowiedź' : 'Poprawne słowo';
-  const wartoscRozwiazania = zadanieLitera ? zadanieLitera.litera : aktualneZadanie.pelne;
+  const etykietaRozwiazania = zadanieZegar
+    ? 'Poprawna godzina'
+    : zadanieLitera
+      ? 'Poprawna odpowiedź'
+      : 'Poprawne słowo';
+  const wartoscRozwiazania = zadanieZegar
+    ? zadanieZegar.poprawna
+    : zadanieLitera
+      ? zadanieLitera.litera
+      : aktualneZadanie.pelne;
 
   return (
     <article className="task-card" aria-live="polite">
@@ -111,6 +136,33 @@ export default function TaskCard() {
               <path d="M48 96 L80 48 L112 96 Z" fill="#1f3c88" />
             </svg>
           )}
+        </div>
+      ) : zadanieZegar ? (
+        <div className="task-card__clock">
+          <div className="task-card__clock-toggle" role="group" aria-label="Wybór widoku zegara">
+            <button
+              type="button"
+              className={cn('clock-toggle', wariantZegara === 'analogowy' && 'clock-toggle--active')}
+              onClick={() => setWariantZegara('analogowy')}
+              aria-pressed={wariantZegara === 'analogowy'}
+            >
+              Widok tarczy
+            </button>
+            <button
+              type="button"
+              className={cn('clock-toggle', wariantZegara === 'cyfrowy' && 'clock-toggle--active')}
+              onClick={() => setWariantZegara('cyfrowy')}
+              aria-pressed={wariantZegara === 'cyfrowy'}
+            >
+              Wyświetlacz cyfrowy
+            </button>
+          </div>
+          <ClockDisplay
+            godzina={zadanieZegar.godzina}
+            minuty={zadanieZegar.minuty}
+            wariant={wariantZegara}
+            opis={`Zegar pokazuje godzinę ${zadanieZegar.poprawna}`}
+          />
         </div>
       ) : (
         <div
@@ -150,7 +202,7 @@ export default function TaskCard() {
             <p className={cn('feedback', ostatniaOdpowiedz.poprawna ? 'feedback--correct' : 'feedback--wrong')}>
               {ostatniaOdpowiedz.poprawna
                 ? 'Brawo! To prawidłowa odpowiedź.'
-                : 'Spróbuj zapamiętać prawidłowy zapis.'}
+                : 'Spróbuj zapamiętać prawidłowe rozwiązanie.'}
             </p>
             <p className="feedback__solution">
               {etykietaRozwiazania}: <strong>{wartoscRozwiazania}</strong>
