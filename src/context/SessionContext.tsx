@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import type { ReactNode } from 'react';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
-import { zadaniaOdczytywanieCzasu } from '../data/clock';
+import { generujZadaniaOdczytywanieCzasu } from '../data/clock';
 
 export type Widok = 'welcome' | 'exercise' | 'summary';
 export type FiltrZadan = 'all' | 'withIllustrations';
@@ -11,6 +11,12 @@ export type TrybCwiczenia =
   | 'odczytywanie-czasu';
 
 export type SystemCzasu = '12h' | '24h';
+export type KrokMinut = 'kwadrans' | 'co5minut';
+
+export interface UstawieniaZegara {
+  system: SystemCzasu;
+  krokMinut: KrokMinut;
+}
 
 const STORAGE_KEY = 'zabawy-ze-zgloskami/sesje';
 const STORAGE_MAINTENANCE_KEY = 'zabawy-ze-zgloskami/ostatnie-czyszczenie';
@@ -97,6 +103,7 @@ interface SessionState {
   startedAt: number | null;
   zapisana: boolean;
   tryb: TrybCwiczenia;
+  ustawieniaZegara: UstawieniaZegara;
 }
 
 const initialState: SessionState = {
@@ -108,7 +115,11 @@ const initialState: SessionState = {
   sessionId: null,
   startedAt: null,
   zapisana: false,
-  tryb: 'gloski-zmiekczajace'
+  tryb: 'gloski-zmiekczajace',
+  ustawieniaZegara: {
+    system: '12h',
+    krokMinut: 'kwadrans'
+  }
 };
 
 type Action =
@@ -121,6 +132,7 @@ type Action =
       startedAt: number;
       tryb: TrybCwiczenia;
     }
+  | { type: 'USTAW_USTAWIENIA_ZEGARA'; ustawienia: Partial<UstawieniaZegara> }
   | { type: 'ODPOWIEDZ'; odpowiedz: OdpowiedzUzytkownika }
   | { type: 'NASTEPNE' }
   | { type: 'RESET_WIDOK'; widok: Widok }
@@ -150,7 +162,11 @@ function tasuj<T>(elementy: T[]): T[] {
   return kopia;
 }
 
-function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
+function wylosujKolejke(
+  tryb: TrybCwiczenia,
+  filtr: FiltrZadan,
+  ustawieniaZegara: UstawieniaZegara
+): Zadanie[] {
   if (tryb === 'gloski-zmiekczajace') {
     const dostepne = zadaniaZgloski.filter((zadanie) =>
       filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
@@ -175,7 +191,7 @@ function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
     return tasuj(pary).flat();
   }
 
-  return tasuj(zadaniaOdczytywanieCzasu);
+  return tasuj(generujZadaniaOdczytywanieCzasu(ustawieniaZegara));
 }
 
 function generateSessionId(): string {
@@ -185,9 +201,13 @@ function generateSessionId(): string {
   return `sesja-${Date.now()}-${Math.random().toString(16).slice(2, 10)}`;
 }
 
-function przygotujSesje(tryb: TrybCwiczenia, filtr: FiltrZadan) {
+function przygotujSesje(
+  tryb: TrybCwiczenia,
+  filtr: FiltrZadan,
+  ustawieniaZegara: UstawieniaZegara
+) {
   return {
-    kolejka: wylosujKolejke(tryb, filtr),
+    kolejka: wylosujKolejke(tryb, filtr, ustawieniaZegara),
     sessionId: generateSessionId(),
     startedAt: Date.now()
   };
@@ -351,7 +371,8 @@ function reducer(state: SessionState, action: Action): SessionState {
         sessionId: action.sessionId,
         startedAt: action.startedAt,
         zapisana: false,
-        tryb: action.tryb
+        tryb: action.tryb,
+        ustawieniaZegara: state.ustawieniaZegara
       };
     }
     case 'ODPOWIEDZ': {
@@ -376,7 +397,8 @@ function reducer(state: SessionState, action: Action): SessionState {
         ...initialState,
         widok: action.widok,
         filtr: state.filtr,
-        tryb: state.tryb
+        tryb: state.tryb,
+        ustawieniaZegara: state.ustawieniaZegara
       };
     case 'RESET_WYNIKI':
       return {
@@ -388,12 +410,21 @@ function reducer(state: SessionState, action: Action): SessionState {
         sessionId: action.sessionId,
         startedAt: action.startedAt,
         zapisana: false,
-        tryb: action.tryb
+        tryb: action.tryb,
+        ustawieniaZegara: state.ustawieniaZegara
       };
     case 'OZNACZ_ZAPISANA':
       return {
         ...state,
         zapisana: true
+      };
+    case 'USTAW_USTAWIENIA_ZEGARA':
+      return {
+        ...state,
+        ustawieniaZegara: {
+          ...state.ustawieniaZegara,
+          ...action.ustawienia
+        }
       };
     default:
       return state;
@@ -408,6 +439,8 @@ interface SessionContextValue extends SessionState {
   powrotDoStartu: () => void;
   zresetujWyniki: () => void;
   ustawFiltr: (filtr: FiltrZadan) => void;
+  ustawSystemCzasu: (system: SystemCzasu) => void;
+  ustawKrokMinut: (krok: KrokMinut) => void;
   statystyki: {
     wykonane: number;
     poprawne: number;
@@ -507,7 +540,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const rozpocznij = (tryb?: TrybCwiczenia) => {
     const docelowyTryb = tryb ?? state.tryb;
-    const meta = przygotujSesje(docelowyTryb, state.filtr);
+    const meta = przygotujSesje(docelowyTryb, state.filtr, state.ustawieniaZegara);
     dispatch({
       type: 'START',
       filtr: state.filtr,
@@ -550,7 +583,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   };
 
   const zresetujWyniki = () => {
-    const meta = przygotujSesje(state.tryb, state.filtr);
+    const meta = przygotujSesje(state.tryb, state.filtr, state.ustawieniaZegara);
     dispatch({
       type: 'RESET_WYNIKI',
       kolejka: meta.kolejka,
@@ -562,6 +595,14 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   const ustawFiltr = (filtr: FiltrZadan) => {
     dispatch({ type: 'USTAW_FILTR', filtr });
+  };
+
+  const ustawSystemCzasu = (system: SystemCzasu) => {
+    dispatch({ type: 'USTAW_USTAWIENIA_ZEGARA', ustawienia: { system } });
+  };
+
+  const ustawKrokMinut = (krokMinut: KrokMinut) => {
+    dispatch({ type: 'USTAW_USTAWIENIA_ZEGARA', ustawienia: { krokMinut } });
   };
 
   const usunHistorie = () => {
@@ -585,6 +626,8 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     powrotDoStartu,
     zresetujWyniki,
     ustawFiltr,
+    ustawSystemCzasu,
+    ustawKrokMinut,
     statystyki,
     historiaSesji,
     usunHistorie,

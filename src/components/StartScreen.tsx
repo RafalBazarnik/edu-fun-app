@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useSession } from '../context/SessionContext';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
-import { zadaniaOdczytywanieCzasu } from '../data/clock';
+import { generujZadaniaOdczytywanieCzasu } from '../data/clock';
 import SessionHistoryPanel from './SessionHistoryPanel';
 
 function formatDate(timestamp: number): string {
@@ -16,7 +16,15 @@ function formatDate(timestamp: number): string {
 }
 
 export default function StartScreen() {
-  const { rozpocznij, filtr, ustawFiltr, historiaSesji } = useSession();
+  const {
+    rozpocznij,
+    filtr,
+    ustawFiltr,
+    historiaSesji,
+    ustawieniaZegara,
+    ustawSystemCzasu,
+    ustawKrokMinut
+  } = useSession();
   const liczbaZadan = useMemo(
     () =>
       filtr === 'withIllustrations'
@@ -26,7 +34,10 @@ export default function StartScreen() {
   );
 
   const liczbaLiter = zadaniaSamogloskiVsSpolgloski.length;
-  const liczbaZegarow = zadaniaOdczytywanieCzasu.length;
+  const liczbaZegarow = useMemo(
+    () => generujZadaniaOdczytywanieCzasu(ustawieniaZegara).length,
+    [ustawieniaZegara]
+  );
 
   const ostatniaSesjaZgloski = useMemo(
     () => historiaSesji.find((sesja) => sesja.tryb === 'gloski-zmiekczajace'),
@@ -136,7 +147,7 @@ export default function StartScreen() {
                 Ćwicz odczytywanie godzin na tarczy analogowej i w zapisie cyfrowym z czterema odpowiedziami do wyboru.
               </p>
               <p className="module-card__description">
-                Zestawy obejmują klasyczne godziny 12-godzinne, wariant 24-godzinny oraz tarczę z minutami co 5 minut.
+                Dobierz zakres godzin i odstępy minutowe, aby dopasować poziom trudności do potrzeb ćwiczącego.
               </p>
               {ostatniaSesjaZegar && (
                 <p className="module-card__last">
@@ -145,6 +156,52 @@ export default function StartScreen() {
                 </p>
               )}
             </header>
+            <fieldset className="fieldset module-card__fieldset">
+              <legend className="fieldset__legend">Zakres godzin</legend>
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="clock-hours"
+                  value="12h"
+                  checked={ustawieniaZegara.system === '12h'}
+                  onChange={() => ustawSystemCzasu('12h')}
+                />
+                <span>Zegar 12-godzinny (1–12)</span>
+              </label>
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="clock-hours"
+                  value="24h"
+                  checked={ustawieniaZegara.system === '24h'}
+                  onChange={() => ustawSystemCzasu('24h')}
+                />
+                <span>Zegar 24-godzinny (00–23)</span>
+              </label>
+            </fieldset>
+            <fieldset className="fieldset module-card__fieldset">
+              <legend className="fieldset__legend">Odstępy minut</legend>
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="clock-minutes"
+                  value="kwadrans"
+                  checked={ustawieniaZegara.krokMinut === 'kwadrans'}
+                  onChange={() => ustawKrokMinut('kwadrans')}
+                />
+                <span>Co kwadrans (00/15/30/45)</span>
+              </label>
+              <label className="radio">
+                <input
+                  type="radio"
+                  name="clock-minutes"
+                  value="co5minut"
+                  checked={ustawieniaZegara.krokMinut === 'co5minut'}
+                  onChange={() => ustawKrokMinut('co5minut')}
+                />
+                <span>Co 5 minut</span>
+              </label>
+            </fieldset>
             <button
               className="btn btn--primary module-card__cta"
               onClick={() => rozpocznij('odczytywanie-czasu')}

@@ -61,8 +61,10 @@ export default function TaskCard() {
   const zadanieZgloski = jestZadaniemZgloskowym(aktualneZadanie) ? aktualneZadanie : undefined;
 
   useEffect(() => {
-    setWariantZegara('analogowy');
-  }, [aktualneZadanie?.id]);
+    if (!zadanieZegar) {
+      setWariantZegara('analogowy');
+    }
+  }, [zadanieZegar]);
 
   const opcje = useMemo(() => {
     if (zadanieZegar) {
