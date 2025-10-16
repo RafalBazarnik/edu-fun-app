@@ -1,3 +1,5 @@
+import type { SystemCzasu } from '../../context/SessionContext';
+
 interface ClockDisplayProps {
   godzina: number;
   minuty: number;
@@ -5,11 +7,15 @@ interface ClockDisplayProps {
   opis: string;
   rozmiar?: 'standard' | 'compact';
   pokazPodpis?: boolean;
+  system?: SystemCzasu;
 }
 
-function formatuj(godzina: number, minuty: number): string {
-  const hour = ((godzina - 1 + 12) % 12) + 1;
-  return `${hour}:${minuty.toString().padStart(2, '0')}`;
+function formatuj(godzina: number, minuty: number, system: SystemCzasu): string {
+  const normalizedHour12 = ((godzina - 1) % 12 + 12) % 12 + 1;
+  const hour12 = normalizedHour12 === 0 ? 12 : normalizedHour12;
+  const hour24 = ((godzina % 24) + 24) % 24;
+  const hourString = system === '24h' ? hour24.toString().padStart(2, '0') : hour12.toString();
+  return `${hourString}:${minuty.toString().padStart(2, '0')}`;
 }
 
 function stopnieWskazowkiGodzinowej(godzina: number, minuty: number): number {
@@ -27,9 +33,10 @@ export default function ClockDisplay({
   wariant,
   opis,
   rozmiar = 'standard',
-  pokazPodpis = true
+  pokazPodpis = false,
+  system = '12h'
 }: ClockDisplayProps) {
-  const formatted = formatuj(godzina, minuty);
+  const formatted = formatuj(godzina, minuty, system);
 
   if (wariant === 'cyfrowy') {
     return (

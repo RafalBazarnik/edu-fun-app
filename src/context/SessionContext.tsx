@@ -10,6 +10,8 @@ export type TrybCwiczenia =
   | 'samogloski-vs-spolgloski'
   | 'odczytywanie-czasu';
 
+export type SystemCzasu = '12h' | '24h';
+
 const STORAGE_KEY = 'zabawy-ze-zgloskami/sesje';
 const STORAGE_MAINTENANCE_KEY = 'zabawy-ze-zgloskami/ostatnie-czyszczenie';
 const MAX_HISTORY_ENTRIES = 20;
@@ -52,6 +54,7 @@ export interface ZadanieZegar extends ZadanieBazowe {
   godzina: number;
   minuty: number;
   opcje: string[];
+  system: SystemCzasu;
 }
 
 export type Zadanie = ZadanieZgloski | ZadanieLitera | ZadanieZegar;
@@ -138,22 +141,41 @@ function isTrybCwiczenia(value: unknown): value is TrybCwiczenia {
   );
 }
 
-function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
-  const dostepne: Zadanie[] =
-    tryb === 'gloski-zmiekczajace'
-      ? zadaniaZgloski.filter((zadanie) =>
-          filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
-        )
-      : tryb === 'samogloski-vs-spolgloski'
-        ? zadaniaSamogloskiVsSpolgloski
-        : zadaniaOdczytywanieCzasu;
-
-  const kopia = [...dostepne];
+function tasuj<T>(elementy: T[]): T[] {
+  const kopia = [...elementy];
   for (let i = kopia.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     [kopia[i], kopia[j]] = [kopia[j], kopia[i]];
   }
   return kopia;
+}
+
+function wylosujKolejke(tryb: TrybCwiczenia, filtr: FiltrZadan): Zadanie[] {
+  if (tryb === 'gloski-zmiekczajace') {
+    const dostepne = zadaniaZgloski.filter((zadanie) =>
+      filtr === 'withIllustrations' ? Boolean(zadanie.ilustracja) : true
+    );
+    return tasuj(dostepne);
+  }
+
+  if (tryb === 'samogloski-vs-spolgloski') {
+    const samogloski = tasuj(
+      zadaniaSamogloskiVsSpolgloski.filter((zadanie) => zadanie.poprawna === 'Samogłoska')
+    );
+    const spolgloski = tasuj(
+      zadaniaSamogloskiVsSpolgloski.filter((zadanie) => zadanie.poprawna === 'Spółgłoska')
+    );
+    const limit = Math.min(samogloski.length, spolgloski.length);
+    const pary: [Zadanie, Zadanie][] = [];
+
+    for (let i = 0; i < limit; i += 1) {
+      pary.push([samogloski[i], spolgloski[i]]);
+    }
+
+    return tasuj(pary).flat();
+  }
+
+  return tasuj(zadaniaOdczytywanieCzasu);
 }
 
 function generateSessionId(): string {

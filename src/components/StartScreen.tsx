@@ -136,7 +136,7 @@ export default function StartScreen() {
                 Ćwicz odczytywanie godzin na tarczy analogowej i w zapisie cyfrowym z czterema odpowiedziami do wyboru.
               </p>
               <p className="module-card__description">
-                Zakres obejmuje godziny od 1 do 12 w kwartalnych interwałach minutowych.
+                Zestawy obejmują klasyczne godziny 12-godzinne, wariant 24-godzinny oraz tarczę z minutami co 5 minut.
               </p>
               {ostatniaSesjaZegar && (
                 <p className="module-card__last">
