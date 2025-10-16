@@ -65,17 +65,28 @@ export default function TaskCard() {
   }, [aktualneZadanie?.id]);
 
   const opcje = useMemo(() => {
-    const zrodlo = zadanieZegar
-      ? zadanieZegar.opcje
-      : [aktualneZadanie.poprawna, aktualneZadanie.alternatywa];
-    const unikalne = Array.from(new Set(zrodlo));
+    if (zadanieZegar) {
+      const unikalne = Array.from(new Set(zadanieZegar.opcje));
+      const shuffled = [...unikalne];
+      for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    if (zadanieLitera) {
+      return ['Samogłoska', 'Spółgłoska'];
+    }
+
+    const unikalne = Array.from(new Set([aktualneZadanie.poprawna, aktualneZadanie.alternatywa]));
     const shuffled = [...unikalne];
     for (let i = shuffled.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
     return shuffled;
-  }, [aktualneZadanie, zadanieZegar]);
+  }, [aktualneZadanie, zadanieLitera, zadanieZegar]);
 
   const pokazKomentarz = Boolean(ostatniaOdpowiedz && aktualneZadanie.komentarz);
 
@@ -179,6 +190,7 @@ export default function TaskCard() {
             minuty={zadanieZegar.minuty}
             wariant={wariantZegara}
             opis={`Zegar pokazuje godzinę ${zadanieZegar.poprawna}`}
+            system={zadanieZegar.system}
           />
         </div>
       ) : (
@@ -195,7 +207,7 @@ export default function TaskCard() {
           const zaznaczone = ostatniaOdpowiedz?.wybrana === opcja;
           const poprawne = ostatniaOdpowiedz?.poprawna && zaznaczone;
           const bledne = ostatniaOdpowiedz && zaznaczone && !ostatniaOdpowiedz.poprawna;
-          const pokazujZegary = Boolean(zadanieZegar && wariantZegara === 'cyfrowy');
+          const pokazujZegary = zadanieZegar !== undefined && wariantZegara === 'cyfrowy';
           const daneZegara = pokazujZegary ? parsujGodzine(opcja) : null;
           return (
             <button
@@ -210,7 +222,7 @@ export default function TaskCard() {
               onClick={() => udzielOdpowiedzi(opcja)}
               disabled={Boolean(ostatniaOdpowiedz)}
             >
-              {pokazujZegary && daneZegara ? (
+              {pokazujZegary && zadanieZegar && daneZegara ? (
                 <>
                   <span className="choice__clock" aria-hidden="true">
                     <ClockDisplay
@@ -220,6 +232,7 @@ export default function TaskCard() {
                       opis={`Zegar pokazuje godzinę ${opcja}`}
                       rozmiar="compact"
                       pokazPodpis={false}
+                      system={zadanieZegar.system}
                     />
                   </span>
                   <span className="visually-hidden">Godzina {opcja}</span>
