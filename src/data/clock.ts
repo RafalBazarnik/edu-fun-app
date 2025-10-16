@@ -1,4 +1,4 @@
-import type { SystemCzasu, ZadanieZegar } from '../context/SessionContext';
+import type { KrokMinut, SystemCzasu, UstawieniaZegara, ZadanieZegar } from '../context/SessionContext';
 
 const GODZINY_12 = Array.from({ length: 12 }, (_, index) => index + 1);
 const GODZINY_24 = Array.from({ length: 24 }, (_, index) => index);
@@ -80,29 +80,27 @@ function generujKomentarz(godzina: number, minuty: number): string {
   return `Minutowa wskazówka skierowana jest na ${minuty} minut, a godzinowa znajduje się pomiędzy ${hour} a ${nastepna}.`;
 }
 
-const KONFIGURACJE: KonfiguracjaZegara[] = [
-  {
-    id: 'zegar-kwadrans',
-    godziny: GODZINY_12,
-    minuty: MINUTY_KWADRANS,
-    system: '12h'
-  },
-  {
-    id: 'zegar-24h',
-    godziny: GODZINY_24,
-    minuty: MINUTY_KWADRANS,
-    system: '24h'
-  },
-  {
-    id: 'zegar-5min',
-    godziny: GODZINY_12,
-    minuty: MINUTY_5,
-    system: '12h'
-  }
-];
+function godzinyDlaSystemu(system: SystemCzasu): number[] {
+  return system === '24h' ? GODZINY_24 : GODZINY_12;
+}
 
-export const zadaniaOdczytywanieCzasu: ZadanieZegar[] = KONFIGURACJE.flatMap((konfiguracja) =>
-  konfiguracja.godziny.flatMap((godzina) =>
+function minutyDlaKroku(krok: KrokMinut): number[] {
+  return krok === 'co5minut' ? MINUTY_5 : MINUTY_KWADRANS;
+}
+
+function utworzKonfiguracje({ system, krokMinut }: UstawieniaZegara): KonfiguracjaZegara {
+  return {
+    id: `zegar-${system}-${krokMinut}`,
+    godziny: godzinyDlaSystemu(system),
+    minuty: minutyDlaKroku(krokMinut),
+    system
+  } satisfies KonfiguracjaZegara;
+}
+
+export function generujZadaniaOdczytywanieCzasu(ustawienia: UstawieniaZegara): ZadanieZegar[] {
+  const konfiguracja = utworzKonfiguracje(ustawienia);
+
+  return konfiguracja.godziny.flatMap((godzina) =>
     konfiguracja.minuty.map((minuty) => {
       const poprawna = formatujCzas(godzina, minuty, konfiguracja.system);
       const dystraktory = generujDystraktory(godzina, minuty, konfiguracja);
@@ -122,6 +120,6 @@ export const zadaniaOdczytywanieCzasu: ZadanieZegar[] = KONFIGURACJE.flatMap((ko
         system: konfiguracja.system
       } satisfies ZadanieZegar;
     })
-  )
-);
+  );
+}
 
