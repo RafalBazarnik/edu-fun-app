@@ -6,6 +6,11 @@ import type { Zadanie, ZadanieMeteor } from '../context/SessionContext';
 
 const TARCZE_STARTOWE = 3;
 
+type MeteorMathDefenseProps = {
+  isMobileLayout?: boolean;
+  onOpenMobileMenu?: () => void;
+};
+
 function jestZadaniemMeteor(zadanie: Zadanie | undefined): zadanie is ZadanieMeteor {
   return Boolean(zadanie && zadanie.typ === 'meteor');
 }
@@ -17,7 +22,7 @@ function formatSeconds(ms?: number): string {
   return `${(ms / 1000).toFixed(2)} s`;
 }
 
-export default function MeteorMathDefense() {
+export default function MeteorMathDefense({ isMobileLayout = false, onOpenMobileMenu }: MeteorMathDefenseProps) {
   const {
     aktualneZadanie,
     nastepneZadanie,
@@ -296,6 +301,16 @@ export default function MeteorMathDefense() {
   return (
     <div className="meteor-defense">
       <div className="meteor-defense__stage">
+        {isMobileLayout && onOpenMobileMenu ? (
+          <button
+            type="button"
+            className="meteor-defense__mobile-menu"
+            aria-label="Otwórz menu gry"
+            onClick={onOpenMobileMenu}
+          >
+            ✕
+          </button>
+        ) : null}
         <div ref={containerRef} className="meteor-defense__canvas" aria-hidden="true" />
         <div className="meteor-defense__hud">
           <div className="meteor-defense__wave" aria-live="polite">

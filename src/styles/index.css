@@ -513,6 +513,51 @@ a {
   flex-wrap: wrap;
 }
 
+.exercise__modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 1.5rem;
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
+  z-index: 50;
+}
+
+.exercise__modal {
+  background: #fff;
+  width: min(420px, 100%);
+  border-radius: 24px;
+  padding: 1.5rem 1.75rem 2rem;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.exercise__modal-close {
+  align-self: flex-end;
+  border: none;
+  background: transparent;
+  color: #0f172a;
+  font-size: 1.35rem;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+.exercise__modal-close:focus-visible {
+  outline: 3px solid #fcd34d;
+  outline-offset: 3px;
+}
+
+.exercise__modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
 .task-card {
   background: #f8fafc;
   border-radius: 24px;
@@ -1177,6 +1222,36 @@ a {
   padding: 1.25rem 1.5rem;
 }
 
+.meteor-defense__mobile-menu {
+  position: absolute;
+  top: 0.85rem;
+  right: 0.85rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: none;
+  background: rgba(15, 23, 42, 0.6);
+  color: #f8fafc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.meteor-defense__mobile-menu:hover,
+.meteor-defense__mobile-menu:focus-visible {
+  background: rgba(15, 23, 42, 0.8);
+  transform: translateY(-1px);
+}
+
+.meteor-defense__mobile-menu:focus-visible {
+  outline: 3px solid #fcd34d;
+  outline-offset: 3px;
+}
+
 .meteor-defense__wave {
   align-self: flex-start;
   background: rgba(15, 23, 42, 0.7);
@@ -1379,6 +1454,95 @@ a {
 
   .summary__answer {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .exercise--meteor.exercise {
+    padding: 0;
+    gap: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: linear-gradient(180deg, #0f172a 0%, #1f3c88 55%, #0f172a 100%);
+  }
+
+  .exercise--meteor .exercise__main {
+    flex: 1;
+    min-height: 100dvh;
+    padding: 1.25rem 1.25rem 1.75rem;
+    gap: 1.25rem;
+  }
+
+  .exercise--meteor .exercise__controls {
+    display: none;
+  }
+
+  .meteor-defense {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    flex: 1;
+  }
+
+  .meteor-defense__stage {
+    flex: 1 1 auto;
+    min-height: clamp(320px, 60vh, 520px);
+    border-radius: 28px;
+  }
+
+  .meteor-defense__canvas {
+    min-height: 0;
+    height: 100%;
+  }
+
+  .meteor-defense__hud {
+    padding: 1rem 1.25rem 1.5rem;
+  }
+
+  .meteor-defense__wave {
+    background: rgba(15, 23, 42, 0.75);
+  }
+
+  .meteor-defense__stats {
+    background: rgba(15, 23, 42, 0.55);
+    gap: 0.5rem 0.75rem;
+    padding: 0.75rem 0.85rem;
+  }
+
+  .meteor-defense__panel {
+    background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(30, 64, 175, 0.88));
+    color: #e2e8f0;
+    border-radius: 28px 28px 32px 32px;
+    padding: 1.25rem 1.5rem 1.75rem;
+    box-shadow: 0 -18px 45px rgba(15, 23, 42, 0.45);
+  }
+
+  .meteor-defense__panel h3,
+  .meteor-defense__panel > p {
+    display: none;
+  }
+
+  .meteor-defense__equation {
+    background: transparent;
+    color: #fff;
+    font-size: clamp(2.2rem, 9vw, 3rem);
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .meteor-defense__options {
+    gap: 0.75rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .meteor-defense__option {
+    font-size: 1.05rem;
+    background: linear-gradient(135deg, rgba(191, 219, 254, 0.45), rgba(165, 180, 252, 0.25));
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.2);
+  }
+
+  .meteor-defense__option--disabled {
+    box-shadow: none;
   }
 }
 
