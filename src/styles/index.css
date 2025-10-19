@@ -1131,6 +1131,219 @@ a {
   }
 }
 
+
+.exercise--meteor .exercise__main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.exercise--meteor .exercise__controls {
+  justify-content: space-between;
+}
+
+.exercise--meteor .exercise__controls .btn {
+  width: auto;
+}
+
+.meteor-defense {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 2rem;
+}
+
+.meteor-defense__stage {
+  position: relative;
+  background: radial-gradient(circle at top, rgba(59, 130, 246, 0.15), rgba(15, 23, 42, 0.85));
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 380px;
+  box-shadow: inset 0 0 20px rgba(15, 23, 42, 0.3);
+}
+
+.meteor-defense__canvas {
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+}
+
+.meteor-defense__hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+}
+
+.meteor-defense__wave {
+  align-self: flex-start;
+  background: rgba(15, 23, 42, 0.7);
+  color: #f8fafc;
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.meteor-defense__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.65rem 1rem;
+  background: rgba(15, 23, 42, 0.65);
+  color: #e2e8f0;
+  border-radius: 16px;
+  padding: 0.9rem 1rem;
+  backdrop-filter: blur(6px);
+}
+
+.meteor-defense__label {
+  display: block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(226, 232, 240, 0.7);
+}
+
+.meteor-defense__value {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.meteor-defense__lives {
+  display: flex;
+  gap: 0.5rem;
+  align-self: flex-end;
+}
+
+.meteor-defense__life {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.4));
+  transition: opacity 0.2s ease;
+}
+
+.meteor-defense__life--lost {
+  opacity: 0.25;
+  filter: none;
+}
+
+.meteor-defense__panel {
+  background: rgba(226, 232, 240, 0.6);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.25);
+}
+
+.meteor-defense__equation {
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #1f3c88;
+  text-align: center;
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 18px;
+  box-shadow: 0 8px 20px rgba(31, 60, 136, 0.12);
+}
+
+.meteor-defense__options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 0.85rem;
+}
+
+.meteor-defense__option {
+  border: none;
+  border-radius: 14px;
+  padding: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  background: linear-gradient(135deg, rgba(191, 219, 254, 0.6), rgba(129, 140, 248, 0.2));
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.12);
+}
+
+.meteor-defense__option:hover,
+.meteor-defense__option:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.16);
+  outline: none;
+}
+
+.meteor-defense__option--correct {
+  background: linear-gradient(135deg, #4ade80, #22c55e);
+  color: #042f2e;
+}
+
+.meteor-defense__option--wrong {
+  background: linear-gradient(135deg, #fca5a5, #f87171);
+  color: #7f1d1d;
+}
+
+.meteor-defense__option--disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  box-shadow: none;
+}
+
+
+.summary__meteor {
+  width: 100%;
+  background: rgba(226, 232, 240, 0.6);
+  border-radius: 18px;
+  padding: 1rem 1.25rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.summary__meteor h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #1f3c88;
+}
+
+.summary__meteor ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: #334155;
+}
+
+.summary__meteor li {
+  margin: 0.15rem 0;
+}
+
+.meteor-defense__waiting {
+  font-style: italic;
+  color: #475569;
+}
+
+@media (max-width: 960px) {
+  .meteor-defense {
+    grid-template-columns: 1fr;
+  }
+
+  .meteor-defense__panel {
+    order: -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .meteor-defense__stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .meteor-defense__options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 640px) {
   .layout {
     padding: 1rem 0.5rem;
