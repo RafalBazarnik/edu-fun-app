@@ -152,6 +152,50 @@ a {
   background: rgba(255, 255, 255, 0.75);
 }
 
+.module-card__settings-toggle {
+  align-self: flex-start;
+  border: none;
+  border-radius: 999px;
+  background: #dbeafe;
+  color: #1f3c88;
+  font-weight: 700;
+  padding: 0.4rem 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.module-card__settings-toggle:hover {
+  background: #bfdbfe;
+}
+
+.module-card__settings-toggle:focus-visible {
+  outline: 3px solid #fcd34d;
+  outline-offset: 3px;
+}
+
+.module-card__settings-icon {
+  font-size: 0.85rem;
+  transform: rotate(0deg);
+  transition: transform 0.2s ease;
+}
+
+.module-card__settings-icon--open {
+  transform: rotate(180deg);
+}
+
+.module-card__settings {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.module-card__settings--open {
+  display: flex;
+}
+
 .module-card__cta {
   margin-top: auto;
   align-self: stretch;
