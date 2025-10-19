@@ -313,81 +313,72 @@ export default function MeteorMathDefense({ isMobileLayout = false, onOpenMobile
         ) : null}
         <div ref={containerRef} className="meteor-defense__canvas" aria-hidden="true" />
         <div className="meteor-defense__hud">
-          <div className="meteor-defense__wave" aria-live="polite">
-            Fala {fala}/{statystyki.sumaZadan}
+          <div className="meteor-defense__hud-top">
+            <div className="meteor-defense__badge" aria-live="polite">
+              Fala {fala}/{statystyki.sumaZadan}
+            </div>
+            <div className="meteor-defense__top-group" role="group" aria-label="Wyniki bitwy">
+              <div className="meteor-defense__mini-stat" title="Zestrzelone meteory">
+                ✅ {trafienia}
+              </div>
+              <div className="meteor-defense__mini-stat" title="Łączne błędy">
+                ⚠️ {pozostaleBledy}
+              </div>
+              <div className="meteor-defense__mini-stat" title="Średni czas reakcji">
+                ⏱ {formatSeconds(sredniaReakcja)}
+              </div>
+            </div>
+            <div className="meteor-defense__lives" aria-label={`Pozostałe tarcze: ${lives}`}>
+              {Array.from({ length: TARCZE_STARTOWE }).map((_, index) => (
+                <span
+                  key={`life-${index}`}
+                  className={`meteor-defense__life${index < lives ? '' : ' meteor-defense__life--lost'}`}
+                  aria-hidden="true"
+                >
+                  🛡️
+                </span>
+              ))}
+            </div>
           </div>
-          <div className="meteor-defense__stats">
-            <div>
-              <span className="meteor-defense__label">Zestrzelone:</span>
-              <span className="meteor-defense__value">{trafienia}</span>
-            </div>
-            <div>
-              <span className="meteor-defense__label">Błędy:</span>
-              <span className="meteor-defense__value">{pozostaleBledy}</span>
-            </div>
-            <div>
-              <span className="meteor-defense__label">Średni czas:</span>
-              <span className="meteor-defense__value">{formatSeconds(sredniaReakcja)}</span>
-            </div>
-            <div>
-              <span className="meteor-defense__label">Najlepszy:</span>
-              <span className="meteor-defense__value">{formatSeconds(najlepszaReakcja)}</span>
-            </div>
-            <div>
-              <span className="meteor-defense__label">Ostatnia reakcja:</span>
-              <span className="meteor-defense__value">{formatSeconds(ostatniaReakcja)}</span>
-            </div>
-          </div>
-          <div className="meteor-defense__lives" aria-label={`Pozostałe tarcze: ${lives}`}>
-            {Array.from({ length: TARCZE_STARTOWE }).map((_, index) => (
-              <span
-                key={`life-${index}`}
-                className={`meteor-defense__life${index < lives ? '' : ' meteor-defense__life--lost'}`}
-                aria-hidden="true"
-              >
-                🛡️
-              </span>
-            ))}
+          <div className="meteor-defense__hud-bottom">
+            <p className="visually-hidden" aria-live="assertive">
+              {meteorTask ? `Rozwiąż działanie ${meteorTask.dzialanie}` : 'Oczekiwanie na kolejną falę zagrożenia'}
+            </p>
+            {meteorTask ? (
+              <>
+                <div className="meteor-defense__equation" aria-live="polite">
+                  {meteorTask.dzialanie}
+                </div>
+                <div className="meteor-defense__options" role="group" aria-label="Możliwe odpowiedzi">
+                  {meteorTask.opcje.map((opcja) => {
+                    const aktywna = feedback?.option === opcja ? feedback.status : null;
+                    return (
+                      <button
+                        key={opcja}
+                        type="button"
+                        className={`meteor-defense__option${
+                          aktywna === 'correct'
+                            ? ' meteor-defense__option--correct'
+                            : aktywna === 'wrong'
+                              ? ' meteor-defense__option--wrong'
+                              : ''
+                        }${locked ? ' meteor-defense__option--disabled' : ''}`}
+                        onClick={() => handleAnswer(opcja)}
+                        disabled={locked}
+                      >
+                        {opcja}
+                      </button>
+                    );
+                  })}
+                </div>
+              </>
+            ) : (
+              <p className="meteor-defense__waiting" role="status">
+                Oczekiwanie na kolejną falę zagrożenia…
+              </p>
+            )}
           </div>
         </div>
-      </div>
-      <div className="meteor-defense__panel">
-        <h3>Instrukcja</h3>
-        <p>
-          Wybierz poprawny wynik działania, aby odpalić rakietę i zniszczyć meteor zanim przebije osłony miasta. Kolejne fale są
-          szybsze i trudniejsze!
-        </p>
-        {meteorTask ? (
-          <>
-            <div className="meteor-defense__equation" aria-live="polite">
-              {meteorTask.dzialanie}
-            </div>
-            <div className="meteor-defense__options" role="group" aria-label="Możliwe odpowiedzi">
-              {meteorTask.opcje.map((opcja) => {
-                const aktywna = feedback?.option === opcja ? feedback.status : null;
-                return (
-                  <button
-                    key={opcja}
-                    type="button"
-                    className={`meteor-defense__option${
-                      aktywna === 'correct'
-                        ? ' meteor-defense__option--correct'
-                        : aktywna === 'wrong'
-                          ? ' meteor-defense__option--wrong'
-                          : ''
-                    }${locked ? ' meteor-defense__option--disabled' : ''}`}
-                    onClick={() => handleAnswer(opcja)}
-                    disabled={locked}
-                  >
-                    {opcja}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        ) : (
-          <p className="meteor-defense__waiting">Oczekiwanie na kolejną falę zagrożenia…</p>
-        )}
       </div>
     </div>
   );
