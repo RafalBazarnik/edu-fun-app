@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useSession } from '../context/SessionContext';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
 import { generujZadaniaOdczytywanieCzasu } from '../data/clock';
@@ -51,6 +51,8 @@ export default function StartScreen() {
     () => historiaSesji.find((sesja) => sesja.tryb === 'odczytywanie-czasu'),
     [historiaSesji]
   );
+
+  const [pokazUstawieniaZegara, setPokazUstawieniaZegara] = useState(false);
 
   return (
     <section className="panel start-panel">
@@ -146,9 +148,6 @@ export default function StartScreen() {
               <p className="module-card__description">
                 Ćwicz odczytywanie godzin na tarczy analogowej i w zapisie cyfrowym z czterema odpowiedziami do wyboru.
               </p>
-              <p className="module-card__description">
-                Dobierz zakres godzin i odstępy minutowe, aby dopasować poziom trudności do potrzeb ćwiczącego.
-              </p>
               {ostatniaSesjaZegar && (
                 <p className="module-card__last">
                   Ostatnia sesja: {formatDate(ostatniaSesjaZegar.finishedAt)} •{' '}
@@ -156,52 +155,80 @@ export default function StartScreen() {
                 </p>
               )}
             </header>
-            <fieldset className="fieldset module-card__fieldset">
-              <legend className="fieldset__legend">Zakres godzin</legend>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="clock-hours"
-                  value="12h"
-                  checked={ustawieniaZegara.system === '12h'}
-                  onChange={() => ustawSystemCzasu('12h')}
-                />
-                <span>Zegar 12-godzinny (1–12)</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="clock-hours"
-                  value="24h"
-                  checked={ustawieniaZegara.system === '24h'}
-                  onChange={() => ustawSystemCzasu('24h')}
-                />
-                <span>Zegar 24-godzinny (00–23)</span>
-              </label>
-            </fieldset>
-            <fieldset className="fieldset module-card__fieldset">
-              <legend className="fieldset__legend">Odstępy minut</legend>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="clock-minutes"
-                  value="kwadrans"
-                  checked={ustawieniaZegara.krokMinut === 'kwadrans'}
-                  onChange={() => ustawKrokMinut('kwadrans')}
-                />
-                <span>Co kwadrans (00/15/30/45)</span>
-              </label>
-              <label className="radio">
-                <input
-                  type="radio"
-                  name="clock-minutes"
-                  value="co5minut"
-                  checked={ustawieniaZegara.krokMinut === 'co5minut'}
-                  onChange={() => ustawKrokMinut('co5minut')}
-                />
-                <span>Co 5 minut</span>
-              </label>
-            </fieldset>
+            <button
+              type="button"
+              className="module-card__settings-toggle"
+              aria-expanded={pokazUstawieniaZegara}
+              aria-controls="ustawienia-zegara"
+              onClick={() => setPokazUstawieniaZegara((poprzedniaWartosc) => !poprzedniaWartosc)}
+            >
+              <span className="module-card__settings-label">Ustawienia:</span>
+              <span className="module-card__settings-action">
+                {pokazUstawieniaZegara ? 'schowaj' : 'pokaż'}
+              </span>
+              <span
+                className={`module-card__settings-icon${
+                  pokazUstawieniaZegara ? ' module-card__settings-icon--open' : ''
+                }`}
+                aria-hidden="true"
+              >
+                ▾
+              </span>
+            </button>
+            <div
+              id="ustawienia-zegara"
+              className={`module-card__settings${
+                pokazUstawieniaZegara ? ' module-card__settings--open' : ''
+              }`}
+              hidden={!pokazUstawieniaZegara}
+            >
+              <fieldset className="fieldset module-card__fieldset">
+                <legend className="fieldset__legend">Zakres godzin</legend>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="clock-hours"
+                    value="12h"
+                    checked={ustawieniaZegara.system === '12h'}
+                    onChange={() => ustawSystemCzasu('12h')}
+                  />
+                  <span>Zegar 12-godzinny (1–12)</span>
+                </label>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="clock-hours"
+                    value="24h"
+                    checked={ustawieniaZegara.system === '24h'}
+                    onChange={() => ustawSystemCzasu('24h')}
+                  />
+                  <span>Zegar 24-godzinny (00–23)</span>
+                </label>
+              </fieldset>
+              <fieldset className="fieldset module-card__fieldset">
+                <legend className="fieldset__legend">Odstępy minut</legend>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="clock-minutes"
+                    value="kwadrans"
+                    checked={ustawieniaZegara.krokMinut === 'kwadrans'}
+                    onChange={() => ustawKrokMinut('kwadrans')}
+                  />
+                  <span>Co kwadrans (00/15/30/45)</span>
+                </label>
+                <label className="radio">
+                  <input
+                    type="radio"
+                    name="clock-minutes"
+                    value="co5minut"
+                    checked={ustawieniaZegara.krokMinut === 'co5minut'}
+                    onChange={() => ustawKrokMinut('co5minut')}
+                  />
+                  <span>Co 5 minut</span>
+                </label>
+              </fieldset>
+            </div>
             <button
               className="btn btn--primary module-card__cta"
               onClick={() => rozpocznij('odczytywanie-czasu')}
