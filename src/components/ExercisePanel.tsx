@@ -1,11 +1,14 @@
 import TaskCard from './TaskCard';
 import StatsPanel from './StatsPanel';
 import { useSession } from '../context/SessionContext';
+import MeteorMathDefense from './MeteorMathDefense';
 
 export default function ExercisePanel() {
-  const { zresetujWyniki, statystyki, powrotDoStartu } = useSession();
+  const { zresetujWyniki, statystyki, powrotDoStartu, tryb } = useSession();
 
   const pozostale = statystyki.sumaZadan - statystyki.wykonane;
+  const isMeteorMode = tryb === 'meteor-math-defense';
+  const pozostaleLabel = isMeteorMode ? 'Pozostałe meteory' : 'Pozostało zadań';
 
   const handleReset = () => {
     if (typeof window === 'undefined' || window.confirm('Czy na pewno chcesz rozpocząć sesję od nowa?')) {
@@ -14,12 +17,12 @@ export default function ExercisePanel() {
   };
 
   return (
-    <section className='exercise'>
+    <section className={`exercise${isMeteorMode ? ' exercise--meteor' : ''}`}>
       <div className='exercise__main'>
-        <TaskCard />
+        {isMeteorMode ? <MeteorMathDefense /> : <TaskCard />}
         <div className='exercise__controls'>
           <p className='exercise__status' aria-live='polite'>
-            Pozostało zadań: {Math.max(pozostale, 0)}
+            {pozostaleLabel}: {Math.max(pozostale, 0)}
           </p>
           <button className='btn btn--primary' onClick={powrotDoStartu}>
             Powrót

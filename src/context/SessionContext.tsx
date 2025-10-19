@@ -2,13 +2,15 @@ import { createContext, useContext, useEffect, useMemo, useReducer, useState } f
 import type { ReactNode } from 'react';
 import { zadaniaSamogloskiVsSpolgloski, zadaniaZgloski } from '../data/tasks';
 import { generujZadaniaOdczytywanieCzasu } from '../data/clock';
+import { generujZadaniaMeteor } from '../data/meteorMath';
 
 export type Widok = 'welcome' | 'exercise' | 'summary';
 export type FiltrZadan = 'all' | 'withIllustrations';
 export type TrybCwiczenia =
   | 'gloski-zmiekczajace'
   | 'samogloski-vs-spolgloski'
-  | 'odczytywanie-czasu';
+  | 'odczytywanie-czasu'
+  | 'meteor-math-defense';
 
 export type SystemCzasu = '12h' | '24h';
 export type KrokMinut = 'kwadrans' | 'co5minut';
@@ -33,7 +35,7 @@ export interface IlustracjaZadania {
 
 interface ZadanieBazowe {
   id: string;
-  typ: 'zgloska' | 'litera' | 'zegar';
+  typ: 'zgloska' | 'litera' | 'zegar' | 'meteor';
   kategoria: string;
   poprawna: string;
   alternatywa: string;
@@ -63,13 +65,24 @@ export interface ZadanieZegar extends ZadanieBazowe {
   system: SystemCzasu;
 }
 
-export type Zadanie = ZadanieZgloski | ZadanieLitera | ZadanieZegar;
+export interface ZadanieMeteor extends ZadanieBazowe {
+  typ: 'meteor';
+  kategoria: 'meteor-math-defense';
+  dzialanie: string;
+  opcje: string[];
+  czasLimitMs: number;
+  poziom: number;
+}
+
+export type Zadanie = ZadanieZgloski | ZadanieLitera | ZadanieZegar | ZadanieMeteor;
 
 export interface OdpowiedzUzytkownika {
   taskId: string;
   wybrana: string;
   poprawna: boolean;
   czas: number;
+  czasReakcjiMs?: number;
+  bledyPrzedSukcesem?: number;
 }
 
 export interface ZapisProby {
@@ -79,6 +92,8 @@ export interface ZapisProby {
   poprawnaOdpowiedz: string;
   pelne: string;
   odpowiedzAt: number;
+  czasReakcjiMs?: number;
+  bledyPrzedSukcesem?: number;
 }
 
 export interface ZapisSesji {
@@ -143,13 +158,15 @@ type Action =
       startedAt: number;
       tryb: TrybCwiczenia;
     }
-  | { type: 'OZNACZ_ZAPISANA' };
+  | { type: 'OZNACZ_ZAPISANA' }
+  | { type: 'ZAKONCZ' };
 
 function isTrybCwiczenia(value: unknown): value is TrybCwiczenia {
   return (
     value === 'gloski-zmiekczajace' ||
     value === 'samogloski-vs-spolgloski' ||
-    value === 'odczytywanie-czasu'
+    value === 'odczytywanie-czasu' ||
+    value === 'meteor-math-defense'
   );
 }
 
@@ -189,6 +206,10 @@ function wylosujKolejke(
     }
 
     return tasuj(pary).flat();
+  }
+
+  if (tryb === 'meteor-math-defense') {
+    return generujZadaniaMeteor();
   }
 
   return tasuj(generujZadaniaOdczytywanieCzasu(ustawieniaZegara));
@@ -252,38 +273,53 @@ function sanitizeHistory(value: unknown): ZapisSesji[] {
       }
 
       const proby: ZapisProby[] = Array.isArray(session.proby)
-        ? session.proby
-            .map((attempt) => {
-              if (typeof attempt !== 'object' || attempt === null) {
-                return null;
-              }
-              const cast = attempt as Partial<ZapisProby>;
-              if (typeof cast.taskId !== 'string' || typeof cast.wybrana !== 'string') {
-                return null;
-              }
-              const poprawna = Boolean(cast.poprawna);
-              const poprawnaOdpowiedz = typeof cast.poprawnaOdpowiedz === 'string' ? cast.poprawnaOdpowiedz : '';
-              const pelne = typeof cast.pelne === 'string' ? cast.pelne : cast.taskId;
-              const odpowiedzAt =
-                typeof cast.odpowiedzAt === 'number' ? cast.odpowiedzAt : Number(cast.odpowiedzAt ?? finishedAt);
-              if (!Number.isFinite(odpowiedzAt)) {
-                return null;
-              }
-              return {
-                taskId: cast.taskId,
-                wybrana: cast.wybrana,
-                poprawna,
-                poprawnaOdpowiedz,
-                pelne,
-                odpowiedzAt
-              } satisfies ZapisProby;
-            })
-            .filter((item): item is ZapisProby => Boolean(item))
+        ? session.proby.reduce<ZapisProby[]>((lista, attempt) => {
+            if (typeof attempt !== 'object' || attempt === null) {
+              return lista;
+            }
+            const cast = attempt as Partial<ZapisProby>;
+            if (typeof cast.taskId !== 'string' || typeof cast.wybrana !== 'string') {
+              return lista;
+            }
+            const poprawna = Boolean(cast.poprawna);
+            const poprawnaOdpowiedz = typeof cast.poprawnaOdpowiedz === 'string' ? cast.poprawnaOdpowiedz : '';
+            const pelne = typeof cast.pelne === 'string' ? cast.pelne : cast.taskId;
+            const odpowiedzAt =
+              typeof cast.odpowiedzAt === 'number' ? cast.odpowiedzAt : Number(cast.odpowiedzAt ?? finishedAt);
+            if (!Number.isFinite(odpowiedzAt)) {
+              return lista;
+            }
+            const czasReakcjiMs =
+              typeof cast.czasReakcjiMs === 'number' && Number.isFinite(cast.czasReakcjiMs)
+                ? cast.czasReakcjiMs
+                : undefined;
+            const bledyPrzedSukcesem =
+              typeof cast.bledyPrzedSukcesem === 'number' && Number.isFinite(cast.bledyPrzedSukcesem)
+                ? cast.bledyPrzedSukcesem
+                : undefined;
+            lista.push({
+              taskId: cast.taskId,
+              wybrana: cast.wybrana,
+              poprawna,
+              poprawnaOdpowiedz,
+              pelne,
+              odpowiedzAt,
+              czasReakcjiMs,
+              bledyPrzedSukcesem
+            });
+            return lista;
+          }, [])
         : [];
 
       const attempts = proby.length;
       const correct = proby.filter((attempt) => attempt.poprawna).length;
-      const mistakes = attempts - correct;
+      const mistakes = proby.reduce((suma, attempt) => {
+        const dodatkowe = attempt.bledyPrzedSukcesem ?? 0;
+        if (attempt.poprawna) {
+          return suma + dodatkowe;
+        }
+        return suma + 1 + dodatkowe;
+      }, 0);
       const accuracy = attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
       const rawTryb = (session as { tryb?: unknown }).tryb;
       const tryb = isTrybCwiczenia(rawTryb) ? rawTryb : 'gloski-zmiekczajace';
@@ -300,7 +336,7 @@ function sanitizeHistory(value: unknown): ZapisSesji[] {
         tryb
       } satisfies ZapisSesji;
     })
-    .filter((item): item is ZapisSesji => Boolean(item));
+    .filter((item): item is ZapisSesji => item !== null);
 }
 
 function uporzadkujISkróćHistorie(historia: ZapisSesji[], teraz: number = Date.now()): ZapisSesji[] {
@@ -326,14 +362,22 @@ function utworzZapisSesjiZeStanu(
         poprawna: odpowiedz.poprawna,
         poprawnaOdpowiedz: zadanie?.poprawna ?? '',
         pelne: zadanie?.pelne ?? odpowiedz.taskId,
-        odpowiedzAt: odpowiedz.czas
+        odpowiedzAt: odpowiedz.czas,
+        czasReakcjiMs: odpowiedz.czasReakcjiMs,
+        bledyPrzedSukcesem: odpowiedz.bledyPrzedSukcesem
       } satisfies ZapisProby;
     })
     .sort((a, b) => a.odpowiedzAt - b.odpowiedzAt);
 
   const attempts = proby.length;
   const correct = proby.filter((attempt) => attempt.poprawna).length;
-  const mistakes = attempts - correct;
+  const mistakes = proby.reduce((suma, attempt) => {
+    const dodatkowe = attempt.bledyPrzedSukcesem ?? 0;
+    if (attempt.poprawna) {
+      return suma + dodatkowe;
+    }
+    return suma + 1 + dodatkowe;
+  }, 0);
   const accuracy = attempts === 0 ? 0 : Math.round((correct / attempts) * 100);
 
   return {
@@ -418,6 +462,12 @@ function reducer(state: SessionState, action: Action): SessionState {
         ...state,
         zapisana: true
       };
+    case 'ZAKONCZ':
+      return {
+        ...state,
+        widok: 'summary',
+        indeks: state.kolejka.length
+      };
     case 'USTAW_USTAWIENIA_ZEGARA':
       return {
         ...state,
@@ -434,13 +484,17 @@ function reducer(state: SessionState, action: Action): SessionState {
 interface SessionContextValue extends SessionState {
   aktualneZadanie: Zadanie | undefined;
   rozpocznij: (tryb?: TrybCwiczenia) => void;
-  udzielOdpowiedzi: (wybor: string) => void;
+  udzielOdpowiedzi: (
+    wybor: string,
+    meta?: { czasReakcjiMs?: number; bledyPrzedSukcesem?: number }
+  ) => void;
   nastepneZadanie: () => void;
   powrotDoStartu: () => void;
   zresetujWyniki: () => void;
   ustawFiltr: (filtr: FiltrZadan) => void;
   ustawSystemCzasu: (system: SystemCzasu) => void;
   ustawKrokMinut: (krok: KrokMinut) => void;
+  zakonczSesje: () => void;
   statystyki: {
     wykonane: number;
     poprawne: number;
@@ -465,7 +519,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const statystyki = useMemo(() => {
     const wykonane = state.odpowiedzi.length;
     const poprawne = state.odpowiedzi.filter((o) => o.poprawna).length;
-    const bledy = wykonane - poprawne;
+    const bledy = state.odpowiedzi.reduce((suma, odpowiedz) => {
+      const dodatkowe = odpowiedz.bledyPrzedSukcesem ?? 0;
+      if (odpowiedz.poprawna) {
+        return suma + dodatkowe;
+      }
+      return suma + 1 + dodatkowe;
+    }, 0);
     const skutecznosc = wykonane === 0 ? 0 : Math.round((poprawne / wykonane) * 100);
     return {
       wykonane,
@@ -551,7 +611,10 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     });
   };
 
-  const udzielOdpowiedzi = (wybor: string) => {
+  const udzielOdpowiedzi = (
+    wybor: string,
+    meta?: { czasReakcjiMs?: number; bledyPrzedSukcesem?: number }
+  ) => {
     if (!aktualneZadanie) {
       return;
     }
@@ -562,13 +625,19 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         taskId: aktualneZadanie.id,
         wybrana: wybor,
         poprawna,
-        czas: Date.now()
+        czas: Date.now(),
+        czasReakcjiMs: meta?.czasReakcjiMs,
+        bledyPrzedSukcesem: meta?.bledyPrzedSukcesem
       }
     });
   };
 
   const nastepneZadanie = () => {
     dispatch({ type: 'NASTEPNE' });
+  };
+
+  const zakonczSesje = () => {
+    dispatch({ type: 'ZAKONCZ' });
   };
 
   const powrotDoStartu = () => {
@@ -628,6 +697,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     ustawFiltr,
     ustawSystemCzasu,
     ustawKrokMinut,
+    zakonczSesje,
     statystyki,
     historiaSesji,
     usunHistorie,

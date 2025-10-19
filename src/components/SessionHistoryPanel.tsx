@@ -16,7 +16,8 @@ function formatDate(timestamp: number): string {
 const NAZWY_TRYBOW: Record<TrybCwiczenia, string> = {
   'gloski-zmiekczajace': 'Głoski zmiękczające',
   'samogloski-vs-spolgloski': 'Samogłoski vs Spółgłoski',
-  'odczytywanie-czasu': 'Odczytywanie czasu'
+  'odczytywanie-czasu': 'Odczytywanie czasu',
+  'meteor-math-defense': 'Meteor Math Defense'
 };
 
 function nazwijTryb(tryb: TrybCwiczenia): string {
@@ -71,7 +72,8 @@ export default function SessionHistoryPanel() {
                     <div className="history__row">
                       <span className="history__date">{formatDate(sesja.finishedAt)}</span>
                       <span className="history__stats">
-                        Tryb: {nazwijTryb(sesja.tryb)} • Wynik: {sesja.correct}/{sesja.attempts} • Skuteczność {sesja.accuracy}%
+                        Tryb: {nazwijTryb(sesja.tryb)} • Wynik: {sesja.correct}/{sesja.attempts} • Skuteczność {sesja.accuracy}% •
+                        Błędy: {sesja.mistakes}
                       </span>
                     </div>
                     <button
@@ -108,7 +110,7 @@ export default function SessionHistoryPanel() {
             </header>
             <p className="history-modal__summary">
               Tryb: {nazwijTryb(wybranaSesja.tryb)} • {wybranaSesja.correct}/{wybranaSesja.attempts} poprawnych odpowiedzi •
-              Skuteczność {wybranaSesja.accuracy}%
+              Skuteczność {wybranaSesja.accuracy}% • Błędy łącznie: {wybranaSesja.mistakes}
             </p>
             <ul className="history-modal__list">
               {wybranaSesja.proby.map((proba) => (
@@ -117,10 +119,16 @@ export default function SessionHistoryPanel() {
                     {proba.poprawna ? '✅' : '❌'}
                   </span>
                   <span className="history-modal__word">{proba.pelne}</span>
-                  <span className="history-modal__answer">
-                    Wybrano: <strong>{proba.wybrana}</strong> | Poprawnie:{' '}
-                    <strong>{proba.poprawnaOdpowiedz || '—'}</strong>
-                  </span>
+                <span className="history-modal__answer">
+                  Wybrano: <strong>{proba.wybrana}</strong> | Poprawnie:{' '}
+                  <strong>{proba.poprawnaOdpowiedz || '—'}</strong>
+                  {typeof proba.czasReakcjiMs === 'number' && !Number.isNaN(proba.czasReakcjiMs) && (
+                    <> | Czas reakcji: {(proba.czasReakcjiMs / 1000).toFixed(2)} s</>
+                  )}
+                  {typeof proba.bledyPrzedSukcesem === 'number' && proba.bledyPrzedSukcesem > 0 && (
+                    <> | Nieudane próby: {proba.bledyPrzedSukcesem}</>
+                  )}
+                </span>
                 </li>
               ))}
             </ul>

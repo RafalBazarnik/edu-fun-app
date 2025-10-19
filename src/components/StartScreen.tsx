@@ -51,6 +51,10 @@ export default function StartScreen() {
     () => historiaSesji.find((sesja) => sesja.tryb === 'odczytywanie-czasu'),
     [historiaSesji]
   );
+  const ostatniaSesjaMeteor = useMemo(
+    () => historiaSesji.find((sesja) => sesja.tryb === 'meteor-math-defense'),
+    [historiaSesji]
+  );
 
   const [pokazUstawieniaZegara, setPokazUstawieniaZegara] = useState(false);
 
@@ -234,6 +238,35 @@ export default function StartScreen() {
               onClick={() => rozpocznij('odczytywanie-czasu')}
             >
               Rozpocznij
+            </button>
+          </article>
+          <article className="module-card module-card--primary">
+            <header className="module-card__header">
+              <div className="module-card__meta">
+                <span className="module-card__category">Nowość</span>
+                <span className="module-card__stats">10 fal ataku</span>
+              </div>
+              <h2 className="module-card__title">Meteor Math Defense</h2>
+              <p className="module-card__description">
+                Dowodź futurystyczną artylerią i bronić miasto przed meteorami z działaniami matematycznymi.
+                Wybierz poprawny wynik, by odpalić rakietę zanim osłony zostaną przełamane.
+              </p>
+              <p className="module-card__description">
+                Z czasem meteory lecą szybciej, a działania stają się trudniejsze — od prostych sum po dzielenie.
+              </p>
+              {ostatniaSesjaMeteor && (
+                <p className="module-card__last">
+                  Ostatnia misja: {formatDate(ostatniaSesjaMeteor.finishedAt)} • Zestrzelone meteory:{' '}
+                  {ostatniaSesjaMeteor.correct}/{ostatniaSesjaMeteor.attempts} • Błędy:{' '}
+                  {ostatniaSesjaMeteor.mistakes}
+                </p>
+              )}
+            </header>
+            <button
+              className="btn btn--primary module-card__cta"
+              onClick={() => rozpocznij('meteor-math-defense')}
+            >
+              Rozpocznij obronę
             </button>
           </article>
         </div>
